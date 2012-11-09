@@ -551,77 +551,750 @@ public with sharing class Loggly {
 	}
 
 	static testMethod void log_toJSONString_noHostname_noLevel_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = null;
+
+		Log testLog = new Log(testValue, testDate, testLevel);
+
+		Test.startTest();
+
+		String result = testLog.toJSONString();
+
+		Test.stopTest();
+
+		String host = null;
+		Boolean gotHost = false;
+		String level = null;
+		Boolean gotLevel = false;
+		String formattedDatetime = null;
+		Boolean gotDatetime = false;
+		String message = null;
+		Boolean gotMessage = false;
+
+		JSONParser parser = JSON.createParser(result);
+
+		while (parser.nextToken() != null) {
+			if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
+				if (parser.getText() == 'host') {
+					gotHost = true;
+					parser.nextToken();
+					host = parser.getText();
+				} else if (parser.getText() == 'level') {
+					gotLevel = true;
+					parser.nextToken();
+					level = parser.getText();
+				} else if (parser.getText() == 'datetime') {
+					gotDatetime = true;
+					parser.nextToken();
+					formattedDatetime = parser.getText();
+					System.assertEquals(testDate.format(DATE_FORMAT), formattedDatetime, 'Did not get the correct date back');
+				} else if (parser.getText() == 'message') {
+					gotMessage = true;
+					parser.nextToken();
+					message = parser.getText();
+					System.assertEquals(testValue, message, 'Did not get the correct message back');
+				}
+			}
+		}
+
+		System.assert(!gotHost, 'Got hostname back in response ['+host+']');
+		System.assert(!gotLevel, 'Got level back in response ['+level+']');
+		System.assert(gotDatetime, 'Did not get the datetime back in response ['+formattedDatetime+']');
+		System.assert(gotMessage, 'Did not get the message back in response ['+message+']');
 	}
 
 	static testMethod void log_toJSONString_noHostname_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		Log testLog = new Log(testValue, testDate, testLevel);
+
+		Test.startTest();
+
+		String result = testLog.toJSONString();
+
+		Test.stopTest();
+
+		String host = null;
+		Boolean gotHost = false;
+		String level = null;
+		Boolean gotLevel = false;
+		String formattedDatetime = null;
+		Boolean gotDatetime = false;
+		String message = null;
+		Boolean gotMessage = false;
+
+		JSONParser parser = JSON.createParser(result);
+
+		while (parser.nextToken() != null) {
+			if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
+				if (parser.getText() == 'host') {
+					gotHost = true;
+					parser.nextToken();
+					host = parser.getText();
+				} else if (parser.getText() == 'level') {
+					gotLevel = true;
+					parser.nextToken();
+					level = parser.getText();
+					System.assertEquals(testLevel, level, 'Did not get the correct level back');
+				} else if (parser.getText() == 'datetime') {
+					gotDatetime = true;
+					parser.nextToken();
+					formattedDatetime = parser.getText();
+					System.assertEquals(testDate.format(DATE_FORMAT), formattedDatetime, 'Did not get the correct date back');
+				} else if (parser.getText() == 'message') {
+					gotMessage = true;
+					parser.nextToken();
+					message = parser.getText();
+					System.assertEquals(testValue, message, 'Did not get the correct message back');
+				}
+			}
+		}
+
+		System.assert(!gotHost, 'Got hostname back in response ['+host+']');
+		System.assert(gotLevel, 'Did not get the level back in response ['+level+']');
+		System.assert(gotDatetime, 'Did not get the datetime back in response ['+formattedDatetime+']');
+		System.assert(gotMessage, 'Did not get the message back in response ['+message+']');
 	}
 
 	static testMethod void log_toJSONString_noLevel_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = null;
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+
+		Log testLog = new Log(testValue, testDate, testLevel);
+
+		Test.startTest();
+
+		String result = testLog.toJSONString();
+
+		Test.stopTest();
+
+		String host = null;
+		Boolean gotHost = false;
+		String level = null;
+		Boolean gotLevel = false;
+		String formattedDatetime = null;
+		Boolean gotDatetime = false;
+		String message = null;
+		Boolean gotMessage = false;
+
+		JSONParser parser = JSON.createParser(result);
+
+		while (parser.nextToken() != null) {
+			if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
+				if (parser.getText() == 'host') {
+					gotHost = true;
+					parser.nextToken();
+					host = parser.getText();
+					System.assertEquals(hostname_val, host, 'Did not get the correct hostname back');
+				} else if (parser.getText() == 'level') {
+					gotLevel = true;
+					parser.nextToken();
+					level = parser.getText();
+				} else if (parser.getText() == 'datetime') {
+					gotDatetime = true;
+					parser.nextToken();
+					formattedDatetime = parser.getText();
+					System.assertEquals(testDate.format(DATE_FORMAT), formattedDatetime, 'Did not get the correct date back');
+				} else if (parser.getText() == 'message') {
+					gotMessage = true;
+					parser.nextToken();
+					message = parser.getText();
+					System.assertEquals(testValue, message, 'Did not get the correct message back');
+				}
+			}
+		}
+
+		System.assert(gotHost, 'Did not get the hostname back in response ['+host+']');
+		System.assert(!gotLevel, 'Got level back in response ['+level+']');
+		System.assert(gotDatetime, 'Did not get the datetime back in response ['+formattedDatetime+']');
+		System.assert(gotMessage, 'Did not get the message back in response ['+message+']');
 	}
 
 	static testMethod void log_toJSONString_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+
+		Log testLog = new Log(testValue, testDate, testLevel);
+
+		Test.startTest();
+
+		String result = testLog.toJSONString();
+
+		Test.stopTest();
+
+		String host = null;
+		Boolean gotHost = false;
+		String level = null;
+		Boolean gotLevel = false;
+		String formattedDatetime = null;
+		Boolean gotDatetime = false;
+		String message = null;
+		Boolean gotMessage = false;
+
+		JSONParser parser = JSON.createParser(result);
+
+		while (parser.nextToken() != null) {
+			if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
+				if (parser.getText() == 'host') {
+					gotHost = true;
+					parser.nextToken();
+					host = parser.getText();
+					System.assertEquals(hostname_val, host, 'Did not get the correct hostname back');
+				} else if (parser.getText() == 'level') {
+					gotLevel = true;
+					parser.nextToken();
+					level = parser.getText();
+					System.assertEquals(testLevel, level, 'Did not get the correct level back');
+				} else if (parser.getText() == 'datetime') {
+					gotDatetime = true;
+					parser.nextToken();
+					formattedDatetime = parser.getText();
+					System.assertEquals(testDate.format(DATE_FORMAT), formattedDatetime, 'Did not get the correct date back');
+				} else if (parser.getText() == 'message') {
+					gotMessage = true;
+					parser.nextToken();
+					message = parser.getText();
+					System.assertEquals(testValue, message, 'Did not get the correct message back');
+				}
+			}
+		}
+
+		System.assert(gotHost, 'Did not get the hostname back in response ['+host+']');
+		System.assert(gotLevel, 'Did not get level back in response ['+level+']');
+		System.assert(gotDatetime, 'Did not get the datetime back in response ['+formattedDatetime+']');
+		System.assert(gotMessage, 'Did not get the message back in response ['+message+']');
 	}
 
 	static testMethod void logCache_constructor_empty_test() {
+		Test.startTest();
+
+		LogCache result = new LogCache();
+
+		Test.stopTest();
+
+		System.assert(result.logs.isEmpty(), 'The initial cache should be empty');
 	}
 
 	static testMethod void logCache_constructor_log_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		Log testLog = new Log(testValue, testDate, testLevel);
+
+		Test.startTest();
+
+		LogCache result = new LogCache(testLog);
+
+		Test.stopTest();
+
+		System.assertEquals(1, result.logs.size(), 'The initial cache should contain a log');
+		System.assertEquals(testValue, result.logs.get(0).logValue, 'Did not get the expect log back');
 	}
 
 	static testMethod void logCache_constructor_list_test() {
+		String testValue1 = '_unittest_value_1';
+		Log testLog1 = new Log(testValue1);
+
+		String testValue2 = '_unittest_value_2';
+		Log testLog2 = new Log(testValue2);
+
+		List<Log> testLogs = new List<Log>{testLog1, testLog2};
+
+		Test.startTest();
+
+		LogCache result = new LogCache(testLogs);
+
+		Test.stopTest();
+
+		System.assertEquals(testLogs.size(), result.logs.size(), 'Did not get the expected number of logs back');
+
+		Boolean gotLog1 = false;
+		Boolean gotLog2 = false;
+
+		for (Log l: result.logs) {
+			if (l.logValue == testValue1) {
+				gotLog1 = true;
+			} else if (l.logValue == testValue2) {
+				gotLog2 = true;
+			} else {
+				System.assert(false, 'Got a log we did not expect ['+l.logValue+']');
+			}
+		}
+
+		System.assert(gotLog1, 'Did not get the first log back');
+		System.assert(gotLog2, 'Did not get the second log back');
 	}
 
 	static testMethod void logCache_add_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		Log testLog = new Log(testValue, testDate, testLevel);
+		LogCache testCache = new LogCache();
+
+		Test.startTest();
+
+		testCache.add(testLog);
+
+		Test.stopTest();
+
+		System.assertEquals(1, testCache.logs.size(), 'The cache should contain a log');
+		System.assertEquals(testValue, testCache.logs.get(0).logValue, 'Did not get the expect log back');
 	}
 
 	static testMethod void logCache_flushLogs_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+
+		Log testLog = new Log(testValue, testDate, testLevel);
+		LogCache testCache = new LogCache(testLog);
+
+		Test.startTest();
+
+		// Don't have a good way to really test this outside of checking to make
+		//  sure it doesn't throw exceptions and that it clears out the log list
+		testCache.flushLogs();
+
+		Test.stopTest();
+
+		System.assert(testCache.logs.isEmpty(), 'The cache should be empty by now');
 	}
 
 	static testMethod void loggly_constructor_empty_test() {
+		Test.startTest();
+
+		Loggly testLoggly = new Loggly();
+
+		Test.stopTest();
+
+		System.assertNotEquals(null, cache, 'Inital cache should not be null');
 	}
 
 	static testMethod void loggly_add_double_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		Loggly testLoggly = new Loggly();
+
+		Test.startTest();
+
+		testLoggly.add(testValue, testDate);
+
+		Test.stopTest();
+
+		System.assertEquals(1, cache.logs.size(), 'Does not have the correct number of logs in the cache');
+		System.assertEquals(testValue, cache.logs.get(0).logValue, 'Did not get the right log back');
 	}
 
 	static testMethod void loggly_add_triple_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		Loggly testLoggly = new Loggly();
+
+		Test.startTest();
+
+		testLoggly.add(testValue, testDate, testLevel);
+
+		Test.stopTest();
+
+		System.assertEquals(1, cache.logs.size(), 'Does not have the correct number of logs in the cache');
+		System.assertEquals(testValue, cache.logs.get(0).logValue, 'Did not get the right log back');
 	}
 
 	static testMethod void loggly_flush_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+
+		Loggly testLoggly = new Loggly();
+		testLoggly.add(testValue, testDate);
+
+		Test.startTest();
+
+		testLoggly.flush();
+
+		Test.stopTest();
+
+		System.assertEquals(0, cache.logs.size(), 'Does not have the correct number of logs in the cache');
 	}
 
 	static testMethod void loggly_singleLog_quad_noBatch_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+
+		LogCache testCache = new LogCache();
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testLevel, testCache);
+
+		Test.stopTest();
+
+		System.assert(testCache.logs.isEmpty(), 'Cache should still be empty since we are not batching');
 	}
 
 	static testMethod void loggly_singleLog_quad_noCache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+		BATCH_LOGS = true;
+
+		LogCache testCache = null; 
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testLevel, testCache);
+
+		Test.stopTest();
 	}
 
 	static testMethod void loggly_singleLog_quad_cache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+		BATCH_LOGS = true;
+
+		LogCache testCache = new LogCache(); 
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testLevel, testCache);
+
+		Test.stopTest();
+
+		System.assertEquals(1, testCache.logs.size(), 'Log did not get added to the cache');
+		System.assertEquals(testValue, testCache.logs.get(0).logValue, 'Did not get the correct log value');
 	}
 
 	static testMethod void loggly_singleLog_triple_level_noBatch_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testLevel);
+
+		Test.stopTest();
+
+		System.assertEquals(null, cache, 'Cache should still be empty since we are not batching');
 	}
 
 	static testMethod void loggly_singleLog_triple_level_noCache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+		BATCH_LOGS = true;
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testLevel);
+
+		Test.stopTest();
 	}
 
 	static testMethod void loggly_singleLog_triple_level_cache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+		BATCH_LOGS = true;
+
+		Loggly testLoggly = new Loggly();
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testLevel);
+
+		Test.stopTest();
+
+		System.assertEquals(1, cache.logs.size(), 'Log did not get added to the cache');
+		System.assertEquals(testValue, cache.logs.get(0).logValue, 'Did not get the correct log value');
 	}
 
 	static testMethod void loggly_singleLog_triple_cache_noBatch_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+
+		LogCache testCache = new LogCache();
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testCache);
+
+		Test.stopTest();
+
+		System.assert(testCache.logs.isEmpty(), 'Cache should still be empty since we are not batching');
 	}
 
 	static testMethod void loggly_singleLog_triple_cache_noCache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+		BATCH_LOGS = true;
+
+		LogCache testCache = null; 
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testCache);
+
+		Test.stopTest();
 	}
 
 	static testMethod void loggly_singleLog_triple_cache_cache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+		BATCH_LOGS = true;
+
+		LogCache testCache = new LogCache(); 
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testCache);
+
+		Test.stopTest();
+
+		System.assertEquals(1, testCache.logs.size(), 'Log did not get added to the cache');
+		System.assertEquals(testValue, testCache.logs.get(0).logValue, 'Did not get the correct log value');
 	}
 
 	static testMethod void loggly_singleLog_double_noBatch_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate);
+
+		Test.stopTest();
+
+		System.assertEquals(null, cache, 'Cache should still be empty since we are not batching');
 	}
 
 	static testMethod void loggly_singleLog_double_noCache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+		BATCH_LOGS = true;
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate);
+
+		Test.stopTest();
 	}
 
 	static testMethod void loggly_singleLog_double_cache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		SETTING_NAME = settingName;
+		BATCH_LOGS = true;
+
+		Loggly testLoggly = new Loggly();
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate);
+
+		Test.stopTest();
+
+		System.assertEquals(1, cache.logs.size(), 'Log did not get added to the cache');
+		System.assertEquals(testValue, cache.logs.get(0).logValue, 'Did not get the correct log value');
 	}
 }
