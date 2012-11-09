@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>List</customSettingsType>
+    <customSettingsVisibility>Public</customSettingsVisibility>
+    <description>Settings for logging to Loggly from Salesforce</description>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>Endpoint__c</fullName>
+        <description>The loggly HTTPS endpoint</description>
+        <externalId>false</externalId>
+        <inlineHelpText>This can be obtained by creating an HTTP endpoint in loggly and using the generated URL
+
+http://wiki.loggly.com/wiki:start</inlineHelpText>
+        <label>Endpoint</label>
+        <length>255</length>
+        <required>true</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Hostname__c</fullName>
+        <description>The hostname to display.  This field will display in your loggly payload for filtering.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The hostname to display.  This field will display in your loggly payload for filtering.</inlineHelpText>
+        <label>Hostname</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Include_Hostname__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>If the hostname should be included in the payload.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If the hostname should be included in the payload.</inlineHelpText>
+        <label>Include Hostname</label>
+        <type>Checkbox</type>
+    </fields>
+    <label>Loggly</label>
+</CustomObject>
