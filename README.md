@@ -25,7 +25,7 @@ Configure Salesforce
      * Setup -> Develop -> Custom Settings
      * Click Manage next to Loggly
      * Click New
-     * Name it "default" and enter in you URL from the Loggly Configuration section
+     * Name it "default" and enter in you URL from the [Loggly Configuration](#configure-loggly) section
      * Then set the other custom parts to the logging
 
      ![sloggly config](http://i.imgur.com/WNR1A.png "sloggly config")
