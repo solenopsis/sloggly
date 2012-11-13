@@ -21,6 +21,14 @@ Configure Loggly
 
 Configure Salesforce
 --------------------
+* Add Loggly to your allowed remote sites
+     * Setup -> Secrity Controls -> Remote Site Settings
+     * Click New Remote Site
+	* Name it "Loggly"
+	* Set the Remote Site URL to "https://logs.loggly.com"
+
+     ![remote sites config](http://i.imgur.com/BFGcb.png "remote sites config")
+
 * After deploying the Custom Settings object and the Loggly class file, add a new Loggly custom setting
      * Setup -> Develop -> Custom Settings
      * Click Manage next to Loggly
