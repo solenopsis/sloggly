@@ -1,97 +1,161 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>Solenopsis @ GitHub</title>
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-30546144-1']);
+		_gaq.push(['_trackPageview']);
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+	<style type="text/css">
+			body {
+				margin-top: 1.0em;
+				background-color: #eee;
+				font-family: Helvetica, Arial, FreeSans, san-serif;
+				color: #000;
+			}
 
-    <title>Sloggly by solenopsis</title>
-  </head>
+			#container {
+				margin: 0 auto;
+				width: 700px;
+			}
 
-  <body>
+			h1 {
+				font-size: 3em;
+				color: #808080;
+				border-bottom: 1px solid #d00;
+			}
 
-    <header>
-      <div class="container">
-        <h1>Sloggly</h1>
-        <h2>A class designed to send logs to Loggly from Salesforce</h2>
+			.download a img {
+				border: none;
+			}
 
-        <section id="downloads">
-          <a href="https://github.com/solenopsis/sloggly/zipball/master" class="btn">Download as .zip</a>
-          <a href="https://github.com/solenopsis/sloggly/tarball/master" class="btn">Download as .tar.gz</a>
-          <a href="https://github.com/solenopsis/sloggly" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-        </section>
-      </div>
-    </header>
+			h1 .small {
+				font-size: 0.4em;
+			}
 
-    <div class="container">
-      <section id="main_content">
-        <h1>SLoggly</h1>
+			h1 a {
+				text-decoration: none;
+			}
 
-<p>SLoggly is a class (and eventually an AppExchange app) for logging to <a href="http://loggly.com">Loggly</a> from Salesforce APEX classes.</p>
+			h2 {
+				font-size: 1.5em;
+				color: #333;
+			}
 
-<h2>Features</h2>
+			h3 {
+				text-align: center;
+				color: #333;
+			}
 
-<ul>
-<li>Custom settings for setting Loggly URL</li>
-<li>Support for on the fly batch logging <em>(see examples)</em>
-</li>
-<li>JSON logs in Loggly [<a href="http://loggly.com/blog/2011/06/on-the-way-to-impressive/">1</a>]</li>
-</ul><h1>Setup</h1>
+			a {
+				color: #333;
+			}
 
-<h2>Configure Loggly</h2>
+			h1 a {
+				color: #808080;
+			}
 
-<ul>
-<li>
-<p>Create a <a href="http://loggly.com/support/sending-data/input-basics/">new input</a> in Loggly that is HTTPS and json</p>
+			.description {
+				font-size: 1.2em;
+				margin-bottom: 30px;
+				margin-top: 30px;
+				font-style: italic;
+			}
 
-<p><img src="http://i.imgur.com/Lk6E3.png" alt="Loggly Input" title="Loggly Input"></p>
-</li>
-<li><p>Copy your input URL from the input page</p></li>
-</ul><h2>Configure Salesforce</h2>
+			.download {
+				float: right;
+			}
 
-<ul>
-<li>
-<p>Add Loggly to your allowed remote sites</p>
+			pre {
+				background: #ccc;
+				color: #000;
+				padding: 15px;
+			}
 
-<ul>
-<li>Setup -&gt; Secrity Controls -&gt; Remote Site Settings</li>
-<li>Click New Remote Site</li>
-<li>Name it "Loggly"</li>
-<li>
-<p>Set the Remote Site URL to "<a href="https://logs.loggly.com">https://logs.loggly.com</a>"</p>
+			hr {
+				border: 0;
+				width: 80%;
+				border-bottom: 1px solid #aaa;
+			}
 
-<p><img src="http://i.imgur.com/BFGcb.png" alt="remote sites config" title="remote sites config"></p>
-</li>
-</ul>
-</li>
-<li>
-<p>After deploying the Custom Settings object and the Loggly class file, add a new Loggly custom setting</p>
+			.footer {
+				text-align:center;
+				padding-top:30px;
+				font-style: italic;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+			<a href="https://github.com/solenopsis/sloggly"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
 
-<ul>
-<li>Setup -&gt; Develop -&gt; Custom Settings</li>
-<li>Click Manage next to Loggly</li>
-<li>Click New</li>
-<li>Name it "default" and enter in you URL from the <a href="#configure-loggly">Loggly Configuration</a> section</li>
-<li>
-<p>Then set the other custom parts to the logging</p>
+			<div class="download">
+				<a href="https://github.com/solenopsis/sloggly/zipball/master"><img width="90" src="https://github.com/images/modules/download/zip.png" alt="zip" /></a>
+				<a href="https://github.com/solenopsis/sloggly/tarball/master"><img width="90" src="https://github.com/images/modules/download/tar.png" alt="tar" /></a>
+			</div>
 
-<p><img src="http://i.imgur.com/WNR1A.png" alt="sloggly config" title="sloggly config"></p>
-</li>
-</ul>
-</li>
-</ul><h1>Examples</h1>
+			<h1><a href="https://github.com/solenopsis/sloggly"><img src="logo_sm.png" alt="logo" /></a></h1>
 
-<p><strong>Single Log</strong></p>
+			<div class="description">
+				SLoggly is a class (and eventually an AppExchange app) for logging to <a href="http://loggly.com">Loggly</a> from Salesforce APEX classes.
+			</div>
 
-<pre><code>Loggly.singleLog('Error Message', DateTime.now(), 'LEVEL');
-</code></pre>
+			<h2>Features</h2>
 
-<p><strong>Batching Logs</strong></p>
+			<ul>
+				<li>Custom settings for setting Loggly URL</li>
+				<li>Support for on the fly batch logging <em>(see examples)</em></li>
+				<li>JSON logs in Loggly [<a href="http://loggly.com/blog/2011/06/on-the-way-to-impressive/">1</a>]</li>
+			</ul>
 
-<pre><code>//Enable batching
+			<h1>Setup</h1>
+			<h2>Configure Loggly</h2>
+			<ul>
+				<li>
+					<p>Create a <a href="http://loggly.com/support/sending-data/input-basics/">new input</a> in Loggly that is HTTPS and json</p>
+					<p><img src="http://i.imgur.com/Lk6E3.png" alt="Loggly Input" title="Loggly Input"></p>
+				</li>
+				<li><p>Copy your input URL from the input page</p></li>
+			</ul>
+
+			<h2>Configure Salesforce</h2>
+			<ul>
+				<li><p>Add Loggly to your allowed remote sites</p><ul>
+				<li>Setup -&gt; Secrity Controls -&gt; Remote Site Settings</li>
+				<li>Click New Remote Site</li>
+				<li>Name it "Loggly"</li>
+				<li>
+					<p>Set the Remote Site URL to "<a href="https://logs.loggly.com">https://logs.loggly.com</a>"</p>
+					<p><img src="http://i.imgur.com/BFGcb.png" alt="remote sites config" title="remote sites config"></p>
+				</li>
+			</ul>
+
+			<p>After deploying the Custom Settings object and the Loggly class file, add a new Loggly custom setting</p>
+
+			<ul>
+				<li>Setup -&gt; Develop -&gt; Custom Settings</li>
+				<li>Click Manage next to Loggly</li>
+				<li>Click New</li>
+				<li>Name it "default" and enter in you URL from the <a href="#configure-loggly">Loggly Configuration</a> section</li>
+				<li>
+					<p>Then set the other custom parts to the logging</p>
+					<p><img src="http://i.imgur.com/WNR1A.png" alt="sloggly config" title="sloggly config"></p>
+				</li>
+			</ul>
+
+			<h1>Examples</h1>
+			<p><strong>Single Log</strong></p>
+			<pre><code>Loggly.singleLog('Error Message', DateTime.now(), 'LEVEL');</code></pre>
+			<p><strong>Batching Logs</strong></p>
+			<pre><code>//Enable batching
 Loggly.BATCH_LOGS=True;
 
 //Create new instance of the Loggly class
@@ -100,28 +164,18 @@ Loggly l = new Loggly();
 //Batch a message
 l.add('Error Message', DateTime.now(), 'LEVEL');
 
-//Any calls to Loggly.singleLog after setting BATCH_LOGS will automatically be batched and sent with the .flush
+//Any calls to Loggly.singleLog after setting BATCH_LOGS will automatically be
+//batched and sent with the .flush
 
 //Flush the message queue
 l.flush();
-</code></pre>
+			</code></pre>
+			<p><strong>Screenshot from Loggly</strong></p>
+			<p><img src="http://i.imgur.com/lh7rn.png" alt="Screenshot" title="Example"></p>
 
-<p><strong>Screenshot from Loggly</strong></p>
-
-<p><img src="http://i.imgur.com/lh7rn.png" alt="Screenshot" title="Example"></p>
-      </section>
-    </div>
-
-              <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-30546144-1");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
-
-  </body>
+			<div class="footer">
+				get the source code on GitHub : <a href="https://github.com/solenopsis/Solenopsis">solenopsis/Solenopsis</a>
+			</div>
+		</div>
+	</body>
 </html>
