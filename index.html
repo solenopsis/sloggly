@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Sloggly by solenopsis</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Sloggly</h1>
+        <h2>A class designed to send logs to Loggly from Salesforce</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/solenopsis/sloggly/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/solenopsis/sloggly/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/solenopsis/sloggly" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>SLoggly</h1>
+
+<p>SLoggly is a class (and eventually an AppExchange app) for logging to <a href="http://loggly.com">Loggly</a> from Salesforce APEX classes.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Custom settings for setting Loggly URL</li>
+<li>Support for on the fly batch logging <em>(see examples)</em>
+</li>
+<li>JSON logs in Loggly [<a href="http://loggly.com/blog/2011/06/on-the-way-to-impressive/">1</a>]</li>
+</ul><h1>Setup</h1>
+
+<h2>Configure Loggly</h2>
+
+<ul>
+<li>
+<p>Create a <a href="http://loggly.com/support/sending-data/input-basics/">new input</a> in Loggly that is HTTPS and json</p>
+
+<p><img src="http://i.imgur.com/Lk6E3.png" alt="Loggly Input" title="Loggly Input"></p>
+</li>
+<li><p>Copy your input URL from the input page</p></li>
+</ul><h2>Configure Salesforce</h2>
+
+<ul>
+<li>
+<p>Add Loggly to your allowed remote sites</p>
+
+<ul>
+<li>Setup -&gt; Secrity Controls -&gt; Remote Site Settings</li>
+<li>Click New Remote Site</li>
+<li>Name it "Loggly"</li>
+<li>
+<p>Set the Remote Site URL to "<a href="https://logs.loggly.com">https://logs.loggly.com</a>"</p>
+
+<p><img src="http://i.imgur.com/BFGcb.png" alt="remote sites config" title="remote sites config"></p>
+</li>
+</ul>
+</li>
+<li>
+<p>After deploying the Custom Settings object and the Loggly class file, add a new Loggly custom setting</p>
+
+<ul>
+<li>Setup -&gt; Develop -&gt; Custom Settings</li>
+<li>Click Manage next to Loggly</li>
+<li>Click New</li>
+<li>Name it "default" and enter in you URL from the <a href="#configure-loggly">Loggly Configuration</a> section</li>
+<li>
+<p>Then set the other custom parts to the logging</p>
+
+<p><img src="http://i.imgur.com/WNR1A.png" alt="sloggly config" title="sloggly config"></p>
+</li>
+</ul>
+</li>
+</ul><h1>Examples</h1>
+
+<p><strong>Single Log</strong></p>
+
+<pre><code>Loggly.singleLog('Error Message', DateTime.now(), 'LEVEL');
+</code></pre>
+
+<p><strong>Batching Logs</strong></p>
+
+<pre><code>//Enable batching
+Loggly.BATCH_LOGS=True;
+
+//Create new instance of the Loggly class
+Loggly l = new Loggly();
+
+//Batch a message
+l.add('Error Message', DateTime.now(), 'LEVEL');
+
+//Any calls to Loggly.singleLog after setting BATCH_LOGS will automatically be batched and sent with the .flush
+
+//Flush the message queue
+l.flush();
+</code></pre>
+
+<p><strong>Screenshot from Loggly</strong></p>
+
+<p><img src="http://i.imgur.com/lh7rn.png" alt="Screenshot" title="Example"></p>
+      </section>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-30546144-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
