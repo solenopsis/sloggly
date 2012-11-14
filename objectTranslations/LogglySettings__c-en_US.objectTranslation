@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Loggly</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Loggly</value>
+    </caseValues>
+    <fields>
+        <help><!-- This can be obtained by creating an HTTP endpoint in loggly and using the generated URL
+
+http://wiki.loggly.com/wiki:start --></help>
+        <label><!-- Endpoint --></label>
+        <name>Endpoint__c</name>
+    </fields>
+    <fields>
+        <help><!-- The hostname to display.  This field will display in your loggly payload for filtering. --></help>
+        <label><!-- Hostname --></label>
+        <name>Hostname__c</name>
+    </fields>
+    <fields>
+        <help><!-- If the hostname should be included in the payload. --></help>
+        <label><!-- Include Hostname --></label>
+        <name>Include_Hostname__c</name>
+    </fields>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>
