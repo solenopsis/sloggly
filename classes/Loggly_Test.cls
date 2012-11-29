@@ -143,7 +143,7 @@ public class Loggly_Test {
 
 		Test.startTest();
 
-		System.assert(Loggly.INCLUDE_HOSTNAME, 'Hostname should be included');
+		System.assert(!Loggly.INCLUDE_HOSTNAME, 'Hostname should not be included');
 
 		Test.stopTest();
 	}
@@ -374,6 +374,7 @@ public class Loggly_Test {
 		testSettings.Name = settingName;
 		testSettings.Endpoint__c = endpoint;
 		testSettings.Hostname__c = hostname_val;
+		testSettings.Include_Hostname__c = true;
 		insert testSettings;
 
 		Loggly.SETTING_NAME = settingName;
@@ -440,6 +441,7 @@ public class Loggly_Test {
 		testSettings.Name = settingName;
 		testSettings.Endpoint__c = endpoint;
 		testSettings.Hostname__c = hostname_val;
+		testSettings.Include_Hostname__c = true;
 		insert testSettings;
 
 		Loggly.SETTING_NAME = settingName;
@@ -1061,5 +1063,44 @@ public class Loggly_Test {
 		Test.stopTest();
 
 		System.assertEquals(null, Loggly.cache, 'Cache should still be empty since we are not batching');
+	}
+
+	static testMethod void controller_test() {
+		String newDefault = '_default_loggly_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		//This is kind of lame, but we have to do this to make sure that it
+		//  does not fail because the default has already been created
+		Loggly.DEFAULT_SETTING_NAME = newDefault;
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		testSettings.Include_Hostname__c = true;
+
+		Test.startTest();
+
+		PageReference p = Page.Loggly_Configure;
+		Test.setCurrentPage(p);
+		ApexPages.StandardController sc = new ApexPages.StandardController(testSettings);
+		Loggly_Configure_Controller controller = new Loggly_Configure_Controller(sc);
+		controller.create();
+
+		Test.stopTest();
+
+		LogglySettings__c result = [
+			select Endpoint__c,
+				Hostname__c,
+				Include_Hostname__c,
+				Name
+			from LogglySettings__c
+			where Name = :newDefault
+		];
+
+		System.assertEquals(newDefault, result.Name, 'Did not get the right name back');
+		System.assertEquals(endpoint, result.Endpoint__c, 'Did not get the right endpoint');
+		System.assertEquals(hostname_val, result.Hostname__c, 'Did not get the right hostname');
+		System.assert(result.Include_Hostname__c, 'Did not get the right include hostname');
 	}
 }

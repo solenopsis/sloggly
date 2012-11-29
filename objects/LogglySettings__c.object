@@ -30,7 +30,7 @@ http://wiki.loggly.com/wiki:start</inlineHelpText>
     </fields>
     <fields>
         <fullName>Include_Hostname__c</fullName>
-        <defaultValue>true</defaultValue>
+        <defaultValue>false</defaultValue>
         <description>If the hostname should be included in the payload.</description>
         <externalId>false</externalId>
         <inlineHelpText>If the hostname should be included in the payload.</inlineHelpText>

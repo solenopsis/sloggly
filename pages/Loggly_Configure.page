@@ -1,0 +1,19 @@
+<apex:page showHeader="true" title="Loggly Configuration" standardController="LogglySettings__c" extensions="Loggly_Configure_Controller">
+	<apex:form id="form">
+		<apex:pageMessages />
+		<apex:pageBlock title="Create Loggly settings">
+			<apex:pageBlockButtons>
+				<apex:commandButton action="{!create}" value="Create" />
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection title="" columns="1" collapsible="false" showHeader="false">
+				For more information about configuring Loggly prior to use, read the documentation at <a href="http://solenopsis.org/sloggly/">http://solenopsis.org/sloggly/</a>
+			</apex:pageBlockSection>
+			<apex:pageBlockSection title="" columns="2" collapsible="false" showHeader="false">
+				<apex:outputField value="{!LogglySettings__c.Name}" />
+				<apex:inputField value="{!LogglySettings__c.Endpoint__c}" required="true" />
+				<apex:inputField value="{!LogglySettings__c.Hostname__c}" required="false" />
+				<apex:inputField value="{!LogglySettings__c.Include_Hostname__c}" required="false" />
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

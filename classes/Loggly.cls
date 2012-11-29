@@ -26,12 +26,13 @@ public with sharing class Loggly {
 
 	public static String DEFAULT_LEVEL = 'INFO';
 	public static String DATE_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSZ';
+	public static String DEFAULT_SETTING_NAME = 'default';
 
 	/** This is used to determine which custom setting to fetch */
 	public static String SETTING_NAME {
 		get {
 			if (SETTING_NAME == null) {
-				SETTING_NAME = 'default';
+				SETTING_NAME = DEFAULT_SETTING_NAME;
 			}
 
 			return SETTING_NAME;
