@@ -2,7 +2,7 @@
 	<apex:form id="form">
 		<apex:pageMessages />
 		<apex:pageBlock title="Create Loggly settings">
-			<apex:pageBlockButtons>
+			<apex:pageBlockButtons >
 				<apex:commandButton action="{!create}" value="Create" />
 			</apex:pageBlockButtons>
 			<apex:pageBlockSection title="" columns="1" collapsible="false" showHeader="false">
