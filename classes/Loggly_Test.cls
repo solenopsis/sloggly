@@ -1065,6 +1065,31 @@ public class Loggly_Test {
 		System.assertEquals(null, Loggly.cache, 'Cache should still be empty since we are not batching');
 	}
 
+	static testMethod void controller_setters_test() {
+		String newDefault = '_default_loggly_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		Test.startTest();
+
+		Loggly.DEFAULT_SETTING_NAME = newDefault;
+
+		PageReference p = Page.Loggly_Configure;
+		Test.setCurrentPage(p);
+		Loggly_Configure_Controller controller = new Loggly_Configure_Controller();
+
+		controller.setEndpoint(endpoint);
+		controller.setHostname(hostname_val);
+		controller.setIncludeHostname(true);
+
+		System.assertEquals(newDefault, controller.getRecordName(), 'Did not get the right name back');
+		System.assertEquals(endpoint, controller.getEndpoint(), 'Did not get the same endpoint back');
+		System.assertEquals(hostname_val, controller.getHostname(), 'Did not get the same hostname back');
+		System.assert(controller.getIncludeHostname(), 'Did not get the same include hostname back');
+
+		Test.stopTest();
+	}
+
 	static testMethod void controller_test() {
 		String newDefault = '_default_loggly_';
 		String endpoint = 'test://myurl';
@@ -1074,17 +1099,16 @@ public class Loggly_Test {
 		//  does not fail because the default has already been created
 		Loggly.DEFAULT_SETTING_NAME = newDefault;
 
-		LogglySettings__c testSettings = new LogglySettings__c();
-		testSettings.Endpoint__c = endpoint;
-		testSettings.Hostname__c = hostname_val;
-		testSettings.Include_Hostname__c = true;
-
 		Test.startTest();
 
 		PageReference p = Page.Loggly_Configure;
 		Test.setCurrentPage(p);
-		ApexPages.StandardController sc = new ApexPages.StandardController(testSettings);
-		Loggly_Configure_Controller controller = new Loggly_Configure_Controller(sc);
+		Loggly_Configure_Controller controller = new Loggly_Configure_Controller();
+
+		controller.setEndpoint(endpoint);
+		controller.setHostname(hostname_val);
+		controller.setIncludeHostname(true);
+
 		controller.create();
 
 		Test.stopTest();
@@ -1102,5 +1126,49 @@ public class Loggly_Test {
 		System.assertEquals(endpoint, result.Endpoint__c, 'Did not get the right endpoint');
 		System.assertEquals(hostname_val, result.Hostname__c, 'Did not get the right hostname');
 		System.assert(result.Include_Hostname__c, 'Did not get the right include hostname');
+	}
+
+	static testMethod void controller_nohostname_test() {
+		String newDefault = '_default_loggly_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		//This is kind of lame, but we have to do this to make sure that it
+		//  does not fail because the default has already been created
+		Loggly.DEFAULT_SETTING_NAME = newDefault;
+
+		Test.startTest();
+
+		PageReference p = Page.Loggly_Configure;
+		Test.setCurrentPage(p);
+		Loggly_Configure_Controller controller = new Loggly_Configure_Controller();
+
+		controller.setEndpoint(endpoint);
+		controller.setIncludeHostname(true);
+
+		controller.create();
+
+		Test.stopTest();
+
+		List<ApexPages.Message> messages = ApexPages.getMessages();
+
+		System.assertEquals(1, messages.size(), 'Did not get the right number of messages');
+		System.assertEquals(Loggly_Configure_Controller.MESSAGE_INCLUDE_HOSTNAME, messages.get(0).getSummary(), 'Did not get the right summary');
+
+		try {
+			LogglySettings__c result = [
+				select Endpoint__c,
+					Hostname__c,
+					Include_Hostname__c,
+					Name
+				from LogglySettings__c
+				where Name = :newDefault
+			];
+			System.assert(false, 'We should not have gotten this far.');
+		} catch (System.QueryException e) {
+			System.assert(true, 'Got the exception we expected');
+		} catch (Exception e) {
+			System.assert(false, 'Got an exception we did not expect [' + e.getTypeName() + ': ' + e.getMessage() + ']');
+		}
 	}
 }
