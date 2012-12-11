@@ -3,7 +3,7 @@
 * @author Patrick Connelly (patrick@deadlypenguin.com)
 */
 
-// Copyright 2012 Patrick Connell.
+// Copyright 2012 Patrick Connelly.
 //
 // This file is part of SLoggly
 //
