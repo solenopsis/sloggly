@@ -1,7 +1,7 @@
 SLoggly
 =======
 
-SLoggly is a class (and eventually an AppExchange app) for logging to [Loggly](http://loggly.com) from Salesforce APEX classes.
+SLoggly is a class and an [AppExchange app](https://sites.secure.force.com/appexchange/listingDetail?listingId=a0N30000009x9XjEAI) for logging to [Loggly](http://loggly.com) from Salesforce APEX classes.
 
 Features
 --------
