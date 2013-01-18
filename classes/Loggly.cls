@@ -21,15 +21,15 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-public with sharing class Loggly {
+global with sharing class Loggly {
 	private class TestException extends Exception {}
 
-	public static String DEFAULT_LEVEL = 'INFO';
-	public static String DATE_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSZ';
-	public static String DEFAULT_SETTING_NAME = 'default';
+	global static String DEFAULT_LEVEL = 'INFO';
+	global static String DATE_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSZ';
+	global static String DEFAULT_SETTING_NAME = 'default';
 
 	/** This is used to determine which custom setting to fetch */
-	public static String SETTING_NAME {
+	global static String SETTING_NAME {
 		get {
 			if (SETTING_NAME == null) {
 				SETTING_NAME = DEFAULT_SETTING_NAME;
@@ -41,7 +41,7 @@ public with sharing class Loggly {
 	}
 
 	/** This is our custom setting fetch based on SETTING_NAME */
-	public static LogglySettings__c SETTINGS {
+	global static LogglySettings__c SETTINGS {
 		get {
 			if (SETTINGS == null) {
 				SETTINGS = LogglySettings__c.getValues(SETTING_NAME);
@@ -55,7 +55,7 @@ public with sharing class Loggly {
 	/** This gets the endpoint from the SETTINGS.
 	*		NOTE: This should be a JSON endpoint in order to send multiple messages
 	*/
-	public static String LOGGLY_ENDPOINT {
+	global static String LOGGLY_ENDPOINT {
 		get {
 			if (LOGGLY_ENDPOINT == null && SETTINGS != null) {
 				LOGGLY_ENDPOINT = SETTINGS.Endpoint__c;
@@ -67,7 +67,7 @@ public with sharing class Loggly {
 	}
 
 	/** This gets if the hostname should be included in the log sent to loggly */
-	public static Boolean INCLUDE_HOSTNAME {
+	global static Boolean INCLUDE_HOSTNAME {
 		get {
 			if (INCLUDE_HOSTNAME == null) {
 				return (SETTINGS == null) ? true : (SETTINGS.Include_Hostname__c == null) ? false : SETTINGS.Include_Hostname__c;
@@ -79,7 +79,7 @@ public with sharing class Loggly {
 	}
 
 	/** This is the hostname set in the configuration */
-	public static String HOSTNAME {
+	global static String HOSTNAME {
 		get {
 			if (HOSTNAME == null && SETTINGS != null) {
 				HOSTNAME = SETTINGS.Hostname__c;
@@ -96,7 +96,7 @@ public with sharing class Loggly {
 	*	have a known exit point (IE a webservice call) set this to true and
 	*	before exiting the method call the flush() on your Loggly instance.
 	*/
-	public static Boolean BATCH_LOGS {
+	global static Boolean BATCH_LOGS {
 		get {
 			if (BATCH_LOGS == null) {
 				BATCH_LOGS = false;
@@ -107,7 +107,7 @@ public with sharing class Loggly {
 		set;
 	}
 
-	public static Boolean THROW_TEST_EXCEPTION {
+	global static Boolean THROW_TEST_EXCEPTION {
 		get {
 			if (THROW_TEST_EXCEPTION == null) {
 				THROW_TEST_EXCEPTION = false;
@@ -122,7 +122,7 @@ public with sharing class Loggly {
 	*	It allows us to easily format log information internally without our
 	*	clients having to know formatting scheme.
 	*/
-	public class Log {
+	global class Log {
 		/** The text value of the message */
 		public String logValue;
 		/** The time in which the log occured.
@@ -194,7 +194,7 @@ public with sharing class Loggly {
 	/**
 	* A class to cache several log messages to then push to Loggly at one time
 	*/
-	public class LogCache {
+	global class LogCache {
 		/** A list of all the logs */
 		public List<Log> logs;
 
@@ -246,10 +246,10 @@ public with sharing class Loggly {
 	}
 
 	/** An instance variable of our log cache */
-	public static LogCache cache;
+	global static LogCache cache;
 
 	/** Constructor for use with batching logs */
-	public Loggly() {
+	global Loggly() {
 		cache = new LogCache();
 	}
 
@@ -258,16 +258,16 @@ public with sharing class Loggly {
 	* @param logValue The text message
 	* @param logDate The date the event happened
 	*/
-	public void add(String logValue, DateTime logDate) {
+	global void add(String logValue, DateTime logDate) {
 		cache.add(new Log(logValue, logDate));
 	}
 
-	public void add(String logValue, DateTime logDate, String logLevel) {
+	global void add(String logValue, DateTime logDate, String logLevel) {
 		cache.add(new Log(logValue, logDate, logLevel));
 	}
 
 	/** Flushes the logs to Loggly */
-	public void flush() {
+	global void flush() {
 		cache.flushLogs();
 	}
 
@@ -279,7 +279,7 @@ public with sharing class Loggly {
 	* @param logLevel The level
 	* @param logCache An existing logCache to add our messages to if BATCH_LOGS is true
 	*/
-	public static void singleLog(String logValue, DateTime logDate, String logLevel, LogCache logCache) {
+	global static void singleLog(String logValue, DateTime logDate, String logLevel, LogCache logCache) {
 		Log log = new Log(logValue, logDate, logLevel);
 
 		//If we are batching logs we want to override single log.  All calls
@@ -298,7 +298,7 @@ public with sharing class Loggly {
 	* @param logDate The date the event happened
 	* @param logCache An existing logCache to add our messages to if BATCH_LOGS is true
 	*/
-	public static void singleLog(String logValue, DateTime logDate, LogCache logCache) {
+	global static void singleLog(String logValue, DateTime logDate, LogCache logCache) {
 		Log log = new Log(logValue, logDate);
 
 		//If we are batching logs we want to override single log.  All calls
@@ -315,7 +315,7 @@ public with sharing class Loggly {
 	* @param logValue The text message
 	* @param logDate The date the event happened
 	*/
-	public static void singleLog(String logValue, DateTime logDate) {
+	global static void singleLog(String logValue, DateTime logDate) {
 		singleLog(logValue, logDate, cache);
 	}
 
@@ -325,7 +325,7 @@ public with sharing class Loggly {
 	* @param logDate The date the event happened
 	* @param logLevel The level
 	*/
-	public static void singleLog(String logValue, DateTime logDate, String logLevel) {
+	global static void singleLog(String logValue, DateTime logDate, String logLevel) {
 		singleLog(logValue, logDate, logLevel, cache);
 	}
 
@@ -334,7 +334,7 @@ public with sharing class Loggly {
 	* @param logs A set of log messages (in JSON format) to send to endpoint
 	*/
 	@future (callout=true)
-	public static void sendLogs(Set<String> logs) {
+	global static void sendLogs(Set<String> logs) {
 		List<String> logList = new List<String>();
 		logList.addAll(logs);
 
