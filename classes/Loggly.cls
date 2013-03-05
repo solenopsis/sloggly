@@ -247,6 +247,10 @@ global with sharing class Loggly {
 
 		/** Flushes all of the logs and pushes them to Loggly */
 		public void flushLogs() {
+			if (this.logs.isEmpty()) {
+				return;
+			}
+
 			Set<String> logMessages = new Set<String>();
 
 			for (Log log: this.logs) {

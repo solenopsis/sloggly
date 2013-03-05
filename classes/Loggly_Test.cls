@@ -788,6 +788,33 @@ public class Loggly_Test {
 		System.assertEquals(0, Loggly.cache.logs.size(), 'Does not have the correct number of logs in the cache');
 	}
 
+	static testMethod void loggly_flush_empty_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Loggly testLoggly = new Loggly();
+
+		Test.startTest();
+
+		testLoggly.flush();
+
+		Test.stopTest();
+
+		System.assertEquals(0, Loggly.cache.logs.size(), 'Does not have the correct number of logs in the cache');
+	}
+
 	static testMethod void loggly_singleLog_quad_noBatch_test() {
 		String testValue = '_unittest_value_';
 		DateTime testDate = DateTime.now();
