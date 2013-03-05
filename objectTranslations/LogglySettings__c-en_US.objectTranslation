@@ -25,5 +25,10 @@ http://wiki.loggly.com/wiki:start --></help>
         <label><!-- Include Hostname --></label>
         <name>Include_Hostname__c</name>
     </fields>
+    <fields>
+        <help><!-- If user info should be included in the payload --></help>
+        <label><!-- Include Userinfo --></label>
+        <name>Include_Userinfo__c</name>
+    </fields>
     <startsWith>Consonant</startsWith>
 </CustomObjectTranslation>

@@ -168,6 +168,82 @@ public class Loggly_Test {
 		Test.stopTest();
 	}
 
+	static TestMethod void include_userinfo_true_test() {
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Include_Userinfo__c = true;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		System.assert(Loggly.INCLUDE_USERINFO, 'Userinfo should be included');
+
+		Test.stopTest();
+	}
+
+	static TestMethod void include_userinfo_false_test() {
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Include_Userinfo__c = false;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		System.assert(!Loggly.INCLUDE_USERINFO, 'Userinfo should not be included');
+
+		Test.stopTest();
+	}
+
+	static TestMethod void include_userinfo_null_test() {
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		System.assert(!Loggly.INCLUDE_USERINFO, 'Userinfo should not be included');
+
+		Test.stopTest();
+	}
+
+	static TestMethod void include_userinfo_override_test() {
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Include_Userinfo__c = true;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+		Loggly.INCLUDE_USERINFO = false;
+
+		Test.startTest();
+
+		System.assert(!Loggly.INCLUDE_USERINFO, 'Userinfo should not be included');
+
+		Test.stopTest();
+	}
+
 	static TestMethod void batch_logs_true_test() {
 		Loggly.BATCH_LOGS = true;
 

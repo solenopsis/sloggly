@@ -90,6 +90,17 @@ global with sharing class Loggly {
 		private set;
 	}
 
+	global static Boolean INCLUDE_USERINFO {
+		get {
+			if (INCLUDE_USERINFO == null) {
+				return (SETTINGS == null) ? true : (SETTINGS.Include_Userinfo__c == null) ? false : SETTINGS.Include_Userinfo__c;
+			}
+
+			return INCLUDE_USERINFO;
+		}
+		private set;
+	}
+
 	/** This is if we should batch logs.
 	*	This is important for being able to use Loggly.singleLog and still
 	*	capture it and send it over and only use one @future call.  If you
@@ -177,15 +188,20 @@ global with sharing class Loggly {
 			String result = '{';
 
 			if (INCLUDE_HOSTNAME && HOSTNAME != null) {
-				result = result + '"host": '+JSON.serialize(HOSTNAME)+',';
+				result += '"host": ' + JSON.serialize(HOSTNAME) + ',';
+			}
+
+			if (INCLUDE_USERINFO) {
+				result += '"userid": ' + JSON.serialize(UserInfo.getUserId()) + ',';
+				result += '"username": ' + JSON.serialize(UserInfo.getUserName()) + ',';
 			}
 
 			if (this.logLevel != null) {
-				result = result + '"level": ' + JSON.serialize(this.logLevel) + ',';
+				result += '"level": ' + JSON.serialize(this.logLevel) + ',';
 			}
 
-			result = result + '"datetime": ' + JSON.serialize(this.logDate.format(DATE_FORMAT)) + ',';
-			result = result + '"message": ' + JSON.serialize(this.logValue) + ' }';
+			result += '"datetime": ' + JSON.serialize(this.logDate.format(DATE_FORMAT)) + ',';
+			result += '"message": ' + JSON.serialize(this.logValue) + ' }';
 
 			return result;
 		}

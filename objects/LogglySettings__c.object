@@ -6,6 +6,7 @@
     <enableFeeds>false</enableFeeds>
     <fields>
         <fullName>Endpoint__c</fullName>
+        <deprecated>false</deprecated>
         <description>The loggly HTTPS endpoint</description>
         <externalId>false</externalId>
         <inlineHelpText>This can be obtained by creating an HTTP endpoint in loggly and using the generated URL
@@ -19,6 +20,7 @@ http://wiki.loggly.com/wiki:start</inlineHelpText>
     </fields>
     <fields>
         <fullName>Hostname__c</fullName>
+        <deprecated>false</deprecated>
         <description>The hostname to display.  This field will display in your loggly payload for filtering.</description>
         <externalId>false</externalId>
         <inlineHelpText>The hostname to display.  This field will display in your loggly payload for filtering.</inlineHelpText>
@@ -31,10 +33,20 @@ http://wiki.loggly.com/wiki:start</inlineHelpText>
     <fields>
         <fullName>Include_Hostname__c</fullName>
         <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
         <description>If the hostname should be included in the payload.</description>
         <externalId>false</externalId>
         <inlineHelpText>If the hostname should be included in the payload.</inlineHelpText>
         <label>Include Hostname</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Include_Userinfo__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>If user info should be included in the payload</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If user info should be included in the payload</inlineHelpText>
+        <label>Include Userinfo</label>
         <type>Checkbox</type>
     </fields>
     <label>Loggly</label>
