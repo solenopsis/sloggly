@@ -342,45 +342,23 @@ public class Loggly_Test {
 
 		Test.stopTest();
 
-		String host = null;
-		Boolean gotHost = false;
-		String level = null;
-		Boolean gotLevel = false;
-		String formattedDatetime = null;
-		Boolean gotDatetime = false;
-		String message = null;
-		Boolean gotMessage = false;
+		Map<String, String> correctResponses = new Map<String, String>{
+			'datetime' => testDate.format(Loggly.DATE_FORMAT),
+			'message' => testValue
+		};
 
-		JSONParser parser = JSON.createParser(result);
+		Map<String, Object> jsonMap = (Map<String, Object>) JSON.deserializeUntyped(result);
 
-		while (parser.nextToken() != null) {
-			if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
-				if (parser.getText() == 'host') {
-					gotHost = true;
-					parser.nextToken();
-					host = parser.getText();
-				} else if (parser.getText() == 'level') {
-					gotLevel = true;
-					parser.nextToken();
-					level = parser.getText();
-				} else if (parser.getText() == 'datetime') {
-					gotDatetime = true;
-					parser.nextToken();
-					formattedDatetime = parser.getText();
-					System.assertEquals(testDate.format(Loggly.DATE_FORMAT), formattedDatetime, 'Did not get the correct date back');
-				} else if (parser.getText() == 'message') {
-					gotMessage = true;
-					parser.nextToken();
-					message = parser.getText();
-					System.assertEquals(testValue, message, 'Did not get the correct message back');
-				}
+		for (String key: correctResponses.keySet()) {
+			if (!jsonMap.containsKey(key)) {
+				System.assert(false, 'Did not get the ' + key + ' back in response');
 			}
+
+			System.assertEquals(correctResponses.get(key), (String) jsonMap.get(key), 'Did not get the correct value back for ' + key);
+			jsonMap.remove(key);
 		}
 
-		System.assert(!gotHost, 'Got hostname back in response ['+host+']');
-		System.assert(!gotLevel, 'Got level back in response ['+level+']');
-		System.assert(gotDatetime, 'Did not get the datetime back in response ['+formattedDatetime+']');
-		System.assert(gotMessage, 'Did not get the message back in response ['+message+']');
+		System.assert(jsonMap.isEmpty(), 'Got additional data back [' + jsonMap.keySet() + ']');
 	}
 
 	static testMethod void log_toJSONString_noHostname_test() {
@@ -396,46 +374,24 @@ public class Loggly_Test {
 
 		Test.stopTest();
 
-		String host = null;
-		Boolean gotHost = false;
-		String level = null;
-		Boolean gotLevel = false;
-		String formattedDatetime = null;
-		Boolean gotDatetime = false;
-		String message = null;
-		Boolean gotMessage = false;
+		Map<String, String> correctResponses = new Map<String, String>{
+			'level' => testLevel,
+			'datetime' => testDate.format(Loggly.DATE_FORMAT),
+			'message' => testValue
+		};
 
-		JSONParser parser = JSON.createParser(result);
+		Map<String, Object> jsonMap = (Map<String, Object>) JSON.deserializeUntyped(result);
 
-		while (parser.nextToken() != null) {
-			if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
-				if (parser.getText() == 'host') {
-					gotHost = true;
-					parser.nextToken();
-					host = parser.getText();
-				} else if (parser.getText() == 'level') {
-					gotLevel = true;
-					parser.nextToken();
-					level = parser.getText();
-					System.assertEquals(testLevel, level, 'Did not get the correct level back');
-				} else if (parser.getText() == 'datetime') {
-					gotDatetime = true;
-					parser.nextToken();
-					formattedDatetime = parser.getText();
-					System.assertEquals(testDate.format(Loggly.DATE_FORMAT), formattedDatetime, 'Did not get the correct date back');
-				} else if (parser.getText() == 'message') {
-					gotMessage = true;
-					parser.nextToken();
-					message = parser.getText();
-					System.assertEquals(testValue, message, 'Did not get the correct message back');
-				}
+		for (String key: correctResponses.keySet()) {
+			if (!jsonMap.containsKey(key)) {
+				System.assert(false, 'Did not get the ' + key + ' back in response');
 			}
+
+			System.assertEquals(correctResponses.get(key), (String) jsonMap.get(key), 'Did not get the correct value back for ' + key);
+			jsonMap.remove(key);
 		}
 
-		System.assert(!gotHost, 'Got hostname back in response ['+host+']');
-		System.assert(gotLevel, 'Did not get the level back in response ['+level+']');
-		System.assert(gotDatetime, 'Did not get the datetime back in response ['+formattedDatetime+']');
-		System.assert(gotMessage, 'Did not get the message back in response ['+message+']');
+		System.assert(jsonMap.isEmpty(), 'Got additional data back [' + jsonMap.keySet() + ']');
 	}
 
 	static testMethod void log_toJSONString_noLevel_test() {
@@ -463,46 +419,24 @@ public class Loggly_Test {
 
 		Test.stopTest();
 
-		String host = null;
-		Boolean gotHost = false;
-		String level = null;
-		Boolean gotLevel = false;
-		String formattedDatetime = null;
-		Boolean gotDatetime = false;
-		String message = null;
-		Boolean gotMessage = false;
+		Map<String, String> correctResponses = new Map<String, String>{
+			'host' => hostname_val,
+			'datetime' => testDate.format(Loggly.DATE_FORMAT),
+			'message' => testValue
+		};
 
-		JSONParser parser = JSON.createParser(result);
+		Map<String, Object> jsonMap = (Map<String, Object>) JSON.deserializeUntyped(result);
 
-		while (parser.nextToken() != null) {
-			if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
-				if (parser.getText() == 'host') {
-					gotHost = true;
-					parser.nextToken();
-					host = parser.getText();
-					System.assertEquals(hostname_val, host, 'Did not get the correct hostname back');
-				} else if (parser.getText() == 'level') {
-					gotLevel = true;
-					parser.nextToken();
-					level = parser.getText();
-				} else if (parser.getText() == 'datetime') {
-					gotDatetime = true;
-					parser.nextToken();
-					formattedDatetime = parser.getText();
-					System.assertEquals(testDate.format(Loggly.DATE_FORMAT), formattedDatetime, 'Did not get the correct date back');
-				} else if (parser.getText() == 'message') {
-					gotMessage = true;
-					parser.nextToken();
-					message = parser.getText();
-					System.assertEquals(testValue, message, 'Did not get the correct message back');
-				}
+		for (String key: correctResponses.keySet()) {
+			if (!jsonMap.containsKey(key)) {
+				System.assert(false, 'Did not get the ' + key + ' back in response');
 			}
+
+			System.assertEquals(correctResponses.get(key), (String) jsonMap.get(key), 'Did not get the correct value back for ' + key);
+			jsonMap.remove(key);
 		}
 
-		System.assert(gotHost, 'Did not get the hostname back in response ['+host+']');
-		System.assert(!gotLevel, 'Got level back in response ['+level+']');
-		System.assert(gotDatetime, 'Did not get the datetime back in response ['+formattedDatetime+']');
-		System.assert(gotMessage, 'Did not get the message back in response ['+message+']');
+		System.assert(jsonMap.isEmpty(), 'Got additional data back [' + jsonMap.keySet() + ']');
 	}
 
 	static testMethod void log_toJSONString_test() {
@@ -518,6 +452,7 @@ public class Loggly_Test {
 		testSettings.Endpoint__c = endpoint;
 		testSettings.Hostname__c = hostname_val;
 		testSettings.Include_Hostname__c = true;
+		testSettings.Include_Userinfo__c = true;
 		insert testSettings;
 
 		Loggly.SETTING_NAME = settingName;
@@ -530,47 +465,27 @@ public class Loggly_Test {
 
 		Test.stopTest();
 
-		String host = null;
-		Boolean gotHost = false;
-		String level = null;
-		Boolean gotLevel = false;
-		String formattedDatetime = null;
-		Boolean gotDatetime = false;
-		String message = null;
-		Boolean gotMessage = false;
+		Map<String, String> correctResponses = new Map<String, String>{
+			'host' => hostname_val,
+			'level' => testLevel,
+			'datetime' => testDate.format(Loggly.DATE_FORMAT),
+			'userid' => UserInfo.getUserId(),
+			'username' => UserInfo.getUserName(),
+			'message' => testValue
+		};
 
-		JSONParser parser = JSON.createParser(result);
+		Map<String, Object> jsonMap = (Map<String, Object>) JSON.deserializeUntyped(result);
 
-		while (parser.nextToken() != null) {
-			if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
-				if (parser.getText() == 'host') {
-					gotHost = true;
-					parser.nextToken();
-					host = parser.getText();
-					System.assertEquals(hostname_val, host, 'Did not get the correct hostname back');
-				} else if (parser.getText() == 'level') {
-					gotLevel = true;
-					parser.nextToken();
-					level = parser.getText();
-					System.assertEquals(testLevel, level, 'Did not get the correct level back');
-				} else if (parser.getText() == 'datetime') {
-					gotDatetime = true;
-					parser.nextToken();
-					formattedDatetime = parser.getText();
-					System.assertEquals(testDate.format(Loggly.DATE_FORMAT), formattedDatetime, 'Did not get the correct date back');
-				} else if (parser.getText() == 'message') {
-					gotMessage = true;
-					parser.nextToken();
-					message = parser.getText();
-					System.assertEquals(testValue, message, 'Did not get the correct message back');
-				}
+		for (String key: correctResponses.keySet()) {
+			if (!jsonMap.containsKey(key)) {
+				System.assert(false, 'Did not get the ' + key + ' back in response');
 			}
+
+			System.assertEquals(correctResponses.get(key), (String) jsonMap.get(key), 'Did not get the correct value back for ' + key);
+			jsonMap.remove(key);
 		}
 
-		System.assert(gotHost, 'Did not get the hostname back in response ['+host+']');
-		System.assert(gotLevel, 'Did not get level back in response ['+level+']');
-		System.assert(gotDatetime, 'Did not get the datetime back in response ['+formattedDatetime+']');
-		System.assert(gotMessage, 'Did not get the message back in response ['+message+']');
+		System.assert(jsonMap.isEmpty(), 'Got additional data back [' + jsonMap.keySet() + ']');
 	}
 
 	static testMethod void logCache_constructor_empty_test() {
@@ -868,6 +783,8 @@ public class Loggly_Test {
 		Loggly.singleLog(testValue, testDate, testLevel, testCache);
 
 		Test.stopTest();
+
+		System.assert(Loggly.TEST_NOCACHE, 'Did not have a cache');
 	}
 
 	static testMethod void loggly_singleLog_quad_cache_test() {
@@ -949,6 +866,8 @@ public class Loggly_Test {
 		Loggly.singleLog(testValue, testDate, testLevel);
 
 		Test.stopTest();
+
+		System.assert(Loggly.TEST_NOCACHE, 'Did not have a cache');
 	}
 
 	static testMethod void loggly_singleLog_triple_level_cache_test() {
@@ -1032,6 +951,8 @@ public class Loggly_Test {
 		Loggly.singleLog(testValue, testDate, testCache);
 
 		Test.stopTest();
+
+		System.assert(Loggly.TEST_NOCACHE, 'Did not have a cache');
 	}
 
 	static testMethod void loggly_singleLog_triple_cache_cache_test() {
@@ -1110,6 +1031,8 @@ public class Loggly_Test {
 		Loggly.singleLog(testValue, testDate);
 
 		Test.stopTest();
+
+		System.assert(Loggly.TEST_NOCACHE, 'Did not have a cache');
 	}
 
 	static testMethod void loggly_singleLog_double_cache_test() {

@@ -28,6 +28,8 @@ global with sharing class Loggly {
 	global static String DATE_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSZ';
 	global static String DEFAULT_SETTING_NAME = 'default';
 
+	global static Boolean TEST_NOCACHE= false;
+
 	/** This is used to determine which custom setting to fetch */
 	global static String SETTING_NAME {
 		get {
@@ -70,7 +72,11 @@ global with sharing class Loggly {
 	global static Boolean INCLUDE_HOSTNAME {
 		get {
 			if (INCLUDE_HOSTNAME == null) {
-				return (SETTINGS == null) ? true : (SETTINGS.Include_Hostname__c == null) ? false : SETTINGS.Include_Hostname__c;
+				if (SETTINGS == null) {
+					return false;
+				}
+
+				return (SETTINGS.Include_Hostname__c == null) ? false : SETTINGS.Include_Hostname__c;
 			}
 
 			return INCLUDE_HOSTNAME;
@@ -93,7 +99,11 @@ global with sharing class Loggly {
 	global static Boolean INCLUDE_USERINFO {
 		get {
 			if (INCLUDE_USERINFO == null) {
-				return (SETTINGS == null) ? true : (SETTINGS.Include_Userinfo__c == null) ? false : SETTINGS.Include_Userinfo__c;
+				if (SETTINGS == null) {
+					return false;
+				}
+
+				return (SETTINGS.Include_Userinfo__c == null) ? false : SETTINGS.Include_Userinfo__c;
 			}
 
 			return INCLUDE_USERINFO;
@@ -185,25 +195,25 @@ global with sharing class Loggly {
 		* @return The JSON string
 		*/
 		public String toJSONString() {
-			String result = '{';
+			Map<String, String> result = new Map<String, String>();
 
 			if (INCLUDE_HOSTNAME && HOSTNAME != null) {
-				result += '"host": ' + JSON.serialize(HOSTNAME) + ',';
+				result.put('host', HOSTNAME);
 			}
 
 			if (INCLUDE_USERINFO) {
-				result += '"userid": ' + JSON.serialize(UserInfo.getUserId()) + ',';
-				result += '"username": ' + JSON.serialize(UserInfo.getUserName()) + ',';
+				result.put('userid', UserInfo.getUserId());
+				result.put('username', UserInfo.getUserName());
 			}
 
 			if (this.logLevel != null) {
-				result += '"level": ' + JSON.serialize(this.logLevel) + ',';
+				result.put('level', this.logLevel);
 			}
 
-			result += '"datetime": ' + JSON.serialize(this.logDate.format(DATE_FORMAT)) + ',';
-			result += '"message": ' + JSON.serialize(this.logValue) + ' }';
+			result.put('datetime', this.logDate.format(DATE_FORMAT));
+			result.put('message', this.logValue);
 
-			return result;
+			return JSON.serialize(result);
 		}
 	}
 
@@ -257,9 +267,7 @@ global with sharing class Loggly {
 				logMessages.add(log.toJSONString());
 			}
 
-			if (!logMessages.isEmpty()) {
-				sendLogs(logMessages);
-			}
+			sendLogs(logMessages);
 
 			this.logs.clear();
 		}
@@ -308,6 +316,8 @@ global with sharing class Loggly {
 			sendLogs(new Set<String>{log.toJSONString()});
 		} else if (logCache != null) {
 			logCache.add(log);
+		} else if (Test.isRunningTest()) {
+			TEST_NOCACHE = true;
 		}
 	}
 
@@ -327,6 +337,8 @@ global with sharing class Loggly {
 			sendLogs(new Set<String>{log.toJSONString()});
 		} else if (logCache != null) {
 			logCache.add(log);
+		} else if (Test.isRunningTest()) {
+			TEST_NOCACHE = true;
 		}
 	}
 
