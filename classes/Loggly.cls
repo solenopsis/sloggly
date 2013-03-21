@@ -30,6 +30,13 @@ global with sharing class Loggly {
 
 	global static Boolean TEST_NOCACHE= false;
 
+	global static String KEY_HOST = 'host';
+	global static String KEY_USERID = 'userid';
+	global static String KEY_USERNAME = 'username';
+	global static String KEY_LEVEL = 'level';
+	global static String KEY_DATETIME = 'datetime';
+	global static String KEY_MESSAGE = 'message';
+
 	/** This is used to determine which custom setting to fetch */
 	global static String SETTING_NAME {
 		get {
@@ -156,6 +163,8 @@ global with sharing class Loggly {
 		/** The level of the log (eg ERROR, WARNING, INFO, DEBUG) */
 		public String logLevel;
 
+		public Map<String, String> additionalValues;
+
 		/** Blank constructor */
 		public Log() {}
 
@@ -190,30 +199,54 @@ global with sharing class Loggly {
 			this.logLevel = logLevel;
 		}
 
+		/** Constructor with additional values
+		*
+		* @param logValue The text message
+		* @param logDate The date the event happened
+		* @param logLevel The level
+		* @param additionalValues A map of key values for additional data
+		*/
+		public Log(String logValue, DateTime logDate, String logLevel, Map<String, String> additionalValues) {
+			this(logValue, logDate, logLevel);
+			this.additionalValues = additionalValues;
+		}
+
+		/** Generates a map of key to log data
+		*
+		* @return A map of key to data value
+		*/
+		public Map<String, String> toKeyValueMap() {
+			Map<String, String> result = new Map<String, String>();
+
+			if (INCLUDE_HOSTNAME && HOSTNAME != null) {
+				result.put(KEY_HOST, HOSTNAME);
+			}
+
+			if (INCLUDE_USERINFO) {
+				result.put(KEY_USERID, UserInfo.getUserId());
+				result.put(KEY_USERNAME, UserInfo.getUserName());
+			}
+
+			if (this.logLevel != null) {
+				result.put(KEY_LEVEL, this.logLevel);
+			}
+
+			result.put(KEY_DATETIME, this.logDate.format(DATE_FORMAT));
+			result.put(KEY_MESSAGE, this.logValue);
+
+			if (this.additionalValues != null) {
+				result.putAll(this.additionalValues);
+			}
+
+			return result;
+		}
+
 		/** Returns a JSON string version of the log message
 		*
 		* @return The JSON string
 		*/
 		public String toJSONString() {
-			Map<String, String> result = new Map<String, String>();
-
-			if (INCLUDE_HOSTNAME && HOSTNAME != null) {
-				result.put('host', HOSTNAME);
-			}
-
-			if (INCLUDE_USERINFO) {
-				result.put('userid', UserInfo.getUserId());
-				result.put('username', UserInfo.getUserName());
-			}
-
-			if (this.logLevel != null) {
-				result.put('level', this.logLevel);
-			}
-
-			result.put('datetime', this.logDate.format(DATE_FORMAT));
-			result.put('message', this.logValue);
-
-			return JSON.serialize(result);
+			return JSON.serialize(this.toKeyValueMap());
 		}
 	}
 
@@ -290,8 +323,25 @@ global with sharing class Loggly {
 		cache.add(new Log(logValue, logDate));
 	}
 
+	/** Adds a new log to our cache
+	*
+	* @param logValue The text message
+	* @param logDate The date the event happened
+	* @param logLevel The level of the log
+	*/
 	global void add(String logValue, DateTime logDate, String logLevel) {
 		cache.add(new Log(logValue, logDate, logLevel));
+	}
+
+	/** Adds a new log to our cache
+	*
+	* @param logValue The text message
+	* @param logDate The date the event happened
+	* @param logLevel The level of the log
+	* @param additionalValues Additional values to pass to loggly
+	*/
+	global void add(String logValue, DateTime logDate, String logLevel, Map<String, String> additionalValues) {
+		cache.add(new Log(logValue, logDate, logLevel, additionalValues));
 	}
 
 	/** Flushes the logs to Loggly */
@@ -305,9 +355,10 @@ global with sharing class Loggly {
 	* @param logValue The text message
 	* @param logDate The date the event happened
 	* @param logLevel The level
+	* @param additionalValues A map of key to values
 	* @param logCache An existing logCache to add our messages to if BATCH_LOGS is true
 	*/
-	global static void singleLog(String logValue, DateTime logDate, String logLevel, LogCache logCache) {
+	global static void singleLog(String logValue, DateTime logDate, String logLevel, Map<String, String> additionalValues, LogCache logCache) {
 		Log log = new Log(logValue, logDate, logLevel);
 
 		//If we are batching logs we want to override single log.  All calls
@@ -326,20 +377,22 @@ global with sharing class Loggly {
 	*
 	* @param logValue The text message
 	* @param logDate The date the event happened
+	* @param logLevel The level
+	* @param logCache An existing logCache to add our messages to if BATCH_LOGS is true
+	*/
+	global static void singleLog(String logValue, DateTime logDate, String logLevel, LogCache logCache) {
+		singleLog(logValue, logDate, logLevel, null, logCache);
+	}
+
+	/** Sends a single log to Loggly.
+	*	This can be overridden by setting BATCH_LOGS to true
+	*
+	* @param logValue The text message
+	* @param logDate The date the event happened
 	* @param logCache An existing logCache to add our messages to if BATCH_LOGS is true
 	*/
 	global static void singleLog(String logValue, DateTime logDate, LogCache logCache) {
-		Log log = new Log(logValue, logDate);
-
-		//If we are batching logs we want to override single log.  All calls
-		//  should then be made through a class instance of loggly
-		if (!BATCH_LOGS) {
-			sendLogs(new Set<String>{log.toJSONString()});
-		} else if (logCache != null) {
-			logCache.add(log);
-		} else if (Test.isRunningTest()) {
-			TEST_NOCACHE = true;
-		}
+		singleLog(logValue, logDate, null, null, logCache);
 	}
 
 	/** Sends a single log to Loggly
@@ -359,6 +412,17 @@ global with sharing class Loggly {
 	*/
 	global static void singleLog(String logValue, DateTime logDate, String logLevel) {
 		singleLog(logValue, logDate, logLevel, cache);
+	}
+
+	/** Sends a single log to Loggly
+	*
+	* @param logValue The text message
+	* @param logDate The date the event happened
+	* @param logLevel The level
+	* @param additionalValues A map of key to values
+	*/
+	global static void singleLog(String logValue, DateTime logDate, String logLevel, Map<String, String> additionalValues) {
+		singleLog(logValue, logDate, logLevel, additionalValues, cache);
 	}
 
 	/** Sends the logs to Loggly
@@ -402,5 +466,41 @@ global with sharing class Loggly {
 			System.debug(e);
 			System.debug(res.toString());
 		}
+	}
+
+	/** Gets a url for the gif place holder image
+	*
+	* @param logValue The text message
+	* @param logDate The date the event happened
+	*/
+	global static String gifUrl(String logValue, DateTime logDate) {
+		return gifUrl(logValue, logDate, DEFAULT_LEVEL);
+	}
+
+	/** Gets a url for the gif place holder image
+	*
+	* @param logValue The text message
+	* @param logDate The date the event happened
+	* @param logLevel The level
+	*/
+	global static String gifUrl(String logValue, DateTime logDate, String logLevel) {
+		return gifUrl(logValue, logDate, logLevel, null);
+	}
+
+	/** Gets a url for the gif place holder image
+	*
+	* @param logValue The text message
+	* @param logDate The date the event happened
+	* @param logLevel The level
+	* @param additionalValues A map of keys to values to also be passed as json data
+	*/
+	global static String gifUrl(String logValue, DateTime logDate, String logLevel, Map<String, String> additionalValues) {
+		Log log = new Log(logValue, logDate, logLevel, additionalValues);
+		Map<String, String> keyValueMap = log.toKeyValueMap();
+
+		PageReference pageRef = new PageReference(LOGGLY_ENDPOINT + '.gif');
+		pageRef.getParameters().putAll(keyValueMap);
+
+		return pageRef.getUrl();
 	}
 }

@@ -282,6 +282,7 @@ public class Loggly_Test {
 		System.assertEquals(null, testLog.logValue, 'Log value should default to null');
 		System.assertEquals(null, testLog.logDate, 'Log date should default to null');
 		System.assertEquals(null, testLog.logLevel, 'Log level should default to null');
+		System.assertEquals(null, testLog.additionalValues, 'Additional values should be null');
 	}
 
 	static TestMethod void log_constructor_single_test() {
@@ -296,6 +297,7 @@ public class Loggly_Test {
 		System.assertEquals(testValue, testLog.logValue, 'Log value does not equal');
 		System.assertNotEquals(null, testLog.logDate, 'Log date should be set');
 		System.assertEquals(Loggly.DEFAULT_LEVEL, testLog.logLevel, 'Log level does not equal');
+		System.assertEquals(null, testLog.additionalValues, 'Additional values should be null');
 	}
 
 	static TestMethod void log_constructor_double_test() {
@@ -311,6 +313,7 @@ public class Loggly_Test {
 		System.assertEquals(testValue, testLog.logValue, 'Log value does not equal');
 		System.assertEquals(testDAte, testLog.logDate, 'Log date should does not equal');
 		System.assertEquals(Loggly.DEFAULT_LEVEL, testLog.logLevel, 'Log level does not equal');
+		System.assertEquals(null, testLog.additionalValues, 'Additional values should be null');
 	}
 
 	static TestMethod void log_constructor_triple_test() {
@@ -327,7 +330,31 @@ public class Loggly_Test {
 		System.assertEquals(testValue, testLog.logValue, 'Log value does not equal');
 		System.assertEquals(testDate, testLog.logDate, 'Log date does not equal');
 		System.assertEquals(testLevel, testLog.logLevel, 'Log level does not equal');
+		System.assertEquals(null, testLog.additionalValues, 'Additional values should be null');
 	}
+
+	static TestMethod void log_constructor_quad_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = '_unittest_level_';
+		String testKey = '_unittest_key_';
+		String testData = '_unittest_data_';
+
+		Map<String, String> testAdditionalValues = new Map<String, String>{ testKey => testData };
+
+		Test.startTest();
+
+		Loggly.Log testLog = new Loggly.Log(testValue, testDate, testLevel, testAdditionalValues);
+
+		Test.stopTest();
+
+		System.assertEquals(testValue, testLog.logValue, 'Log value does not equal');
+		System.assertEquals(testDate, testLog.logDate, 'Log date does not equal');
+		System.assertEquals(testLevel, testLog.logLevel, 'Log level does not equal');
+		System.assertEquals(1, testLog.additionalValues.size(), 'Incorrect number of additional values');
+		System.assertEquals(testData, testLog.additionalValues.get(testKey), 'Incorrect data for key');
+	}
+
 
 	static testMethod void log_toJSONString_noHostname_noLevel_test() {
 		String testValue = '_unittest_value_';
@@ -343,8 +370,8 @@ public class Loggly_Test {
 		Test.stopTest();
 
 		Map<String, String> correctResponses = new Map<String, String>{
-			'datetime' => testDate.format(Loggly.DATE_FORMAT),
-			'message' => testValue
+			Loggly.KEY_DATETIME => testDate.format(Loggly.DATE_FORMAT),
+			Loggly.KEY_MESSAGE => testValue
 		};
 
 		Map<String, Object> jsonMap = (Map<String, Object>) JSON.deserializeUntyped(result);
@@ -375,9 +402,9 @@ public class Loggly_Test {
 		Test.stopTest();
 
 		Map<String, String> correctResponses = new Map<String, String>{
-			'level' => testLevel,
-			'datetime' => testDate.format(Loggly.DATE_FORMAT),
-			'message' => testValue
+			Loggly.KEY_LEVEL => testLevel,
+			Loggly.KEY_DATETIME => testDate.format(Loggly.DATE_FORMAT),
+			Loggly.KEY_MESSAGE => testValue
 		};
 
 		Map<String, Object> jsonMap = (Map<String, Object>) JSON.deserializeUntyped(result);
@@ -420,9 +447,9 @@ public class Loggly_Test {
 		Test.stopTest();
 
 		Map<String, String> correctResponses = new Map<String, String>{
-			'host' => hostname_val,
-			'datetime' => testDate.format(Loggly.DATE_FORMAT),
-			'message' => testValue
+			Loggly.KEY_HOST => hostname_val,
+			Loggly.KEY_DATETIME => testDate.format(Loggly.DATE_FORMAT),
+			Loggly.KEY_MESSAGE => testValue
 		};
 
 		Map<String, Object> jsonMap = (Map<String, Object>) JSON.deserializeUntyped(result);
@@ -445,7 +472,11 @@ public class Loggly_Test {
 		String testLevel = 'ERROR';
 		String settingName = '_unittest_name_';
 		String endpoint = 'test://myurl';
-		String hostname_val = '_unitest_hostname_';
+		String hostname_val = '_unittest_hostname_';
+		String testKey = '_unittest_key_';
+		String testData = '_unittest_data_';
+
+		Map<String, String> testAdditionalValues = new Map<String, String>{ testKey => testData };
 
 		LogglySettings__c testSettings = new LogglySettings__c();
 		testSettings.Name = settingName;
@@ -457,7 +488,7 @@ public class Loggly_Test {
 
 		Loggly.SETTING_NAME = settingName;
 
-		Loggly.Log testLog = new Loggly.Log(testValue, testDate, testLevel);
+		Loggly.Log testLog = new Loggly.Log(testValue, testDate, testLevel, testAdditionalValues);
 
 		Test.startTest();
 
@@ -466,12 +497,13 @@ public class Loggly_Test {
 		Test.stopTest();
 
 		Map<String, String> correctResponses = new Map<String, String>{
-			'host' => hostname_val,
-			'level' => testLevel,
-			'datetime' => testDate.format(Loggly.DATE_FORMAT),
-			'userid' => UserInfo.getUserId(),
-			'username' => UserInfo.getUserName(),
-			'message' => testValue
+			Loggly.KEY_HOST => hostname_val,
+			Loggly.KEY_LEVEL => testLevel,
+			Loggly.KEY_DATETIME => testDate.format(Loggly.DATE_FORMAT),
+			Loggly.KEY_USERID => UserInfo.getUserId(),
+			Loggly.KEY_USERNAME => UserInfo.getUserName(),
+			Loggly.KEY_MESSAGE => testValue,
+			testKey => testData
 		};
 
 		Map<String, Object> jsonMap = (Map<String, Object>) JSON.deserializeUntyped(result);
@@ -675,6 +707,27 @@ public class Loggly_Test {
 		System.assertEquals(testValue, Loggly.cache.logs.get(0).logValue, 'Did not get the right log back');
 	}
 
+	static testMethod void loggly_add_quad_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+		String testKey = '_unittest_key_';
+		String testData = '_unittest_data_';
+
+		Map<String, String> testAdditionalValues = new Map<String, String>{ testKey => testData };
+
+		Loggly testLoggly = new Loggly();
+
+		Test.startTest();
+
+		testLoggly.add(testValue, testDate, testLevel, testAdditionalValues);
+
+		Test.stopTest();
+
+		System.assertEquals(1, Loggly.cache.logs.size(), 'Does not have the correct number of logs in the cache');
+		System.assertEquals(testValue, Loggly.cache.logs.get(0).logValue, 'Did not get the right log back');
+	}
+
 	static testMethod void loggly_flush_test() {
 		String testValue = '_unittest_value_';
 		DateTime testDate = DateTime.now();
@@ -728,6 +781,103 @@ public class Loggly_Test {
 		Test.stopTest();
 
 		System.assertEquals(0, Loggly.cache.logs.size(), 'Does not have the correct number of logs in the cache');
+	}
+
+	static testMethod void loggly_singleLog_quint_noBatch_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+		String testKey = '_unittest_key_';
+		String testData = '_unittest_data_';
+
+		Map<String, String> testAdditionalValues = new Map<String, String>{ testKey => testData };
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Loggly.LogCache testCache = new Loggly.LogCache();
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testLevel, testAdditionalValues, testCache);
+
+		Test.stopTest();
+
+		System.assert(testCache.logs.isEmpty(), 'Cache should still be empty since we are not batching');
+	}
+
+	static testMethod void loggly_singleLog_quint_noCache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+		String testKey = '_unittest_key_';
+		String testData = '_unittest_data_';
+
+		Map<String, String> testAdditionalValues = new Map<String, String>{ testKey => testData };
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+		Loggly.BATCH_LOGS = true;
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testLevel, testAdditionalValues);
+
+		Test.stopTest();
+
+		System.assert(Loggly.TEST_NOCACHE, 'Did not have a cache');
+	}
+
+	static testMethod void loggly_singleLog_quint_cache_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+		String testKey = '_unittest_key_';
+		String testData = '_unittest_data_';
+
+		Map<String, String> testAdditionalValues = new Map<String, String>{ testKey => testData };
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+		Loggly.BATCH_LOGS = true;
+
+		Loggly.LogCache testCache = new Loggly.LogCache(); 
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue, testDate, testLevel, testAdditionalValues, testCache);
+
+		Test.stopTest();
+
+		System.assertEquals(1, testCache.logs.size(), 'Log did not get added to the cache');
+		System.assertEquals(testValue, testCache.logs.get(0).logValue, 'Did not get the correct log value');
 	}
 
 	static testMethod void loggly_singleLog_quad_noBatch_test() {
@@ -1196,5 +1346,162 @@ public class Loggly_Test {
 		} catch (Exception e) {
 			System.assert(false, 'Got an exception we did not expect [' + e.getTypeName() + ': ' + e.getMessage() + ']');
 		}
+	}
+
+	static testMethod void gifUrl_double_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		Map<String, String> correctResponses = new Map<String, String>{
+			Loggly.KEY_HOST => hostname_val,
+			Loggly.KEY_LEVEL => Loggly.DEFAULT_LEVEL,
+			Loggly.KEY_DATETIME => testDate.format(Loggly.DATE_FORMAT),
+			Loggly.KEY_USERID => UserInfo.getUserId(),
+			Loggly.KEY_USERNAME => UserInfo.getUserName(),
+			Loggly.KEY_MESSAGE => testValue
+		};
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		testSettings.Include_Hostname__c = true;
+		testSettings.Include_Userinfo__c = true;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		String gifUrl = Loggly.gifUrl(testValue, testDate);
+
+		Test.stopTest();
+
+		System.assert(String.isNotBlank(gifUrl), 'Gif URL should not be null');
+		System.assertEquals(endpoint+'.gif', gifUrl.substringBefore('?'), 'Did not get the right base url');
+
+		PageReference pageRef = new PageReference(gifUrl);
+
+		for (String key: pageRef.getParameters().keySet()) {
+			if (correctResponses.containsKey(key)) {
+				System.assertEquals(correctResponses.get(key), pageRef.getParameters().get(key), 'Did not get the right value back for "'+key+'"');
+				correctResponses.remove(key);
+			} else {
+				System.assert(false, 'Got a url parameter we did not expect "'+key+'" => "'+pageRef.getParameters().get(key)+'"');
+			}
+		}
+
+		System.assert(correctResponses.isEmpty(), 'Did not get url parameters back for ['+correctResponses.keySet()+']');
+	}
+
+	static testMethod void gifUrl_triple_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		Map<String, String> correctResponses = new Map<String, String>{
+			Loggly.KEY_HOST => hostname_val,
+			Loggly.KEY_LEVEL => testLevel,
+			Loggly.KEY_DATETIME => testDate.format(Loggly.DATE_FORMAT),
+			Loggly.KEY_USERID => UserInfo.getUserId(),
+			Loggly.KEY_USERNAME => UserInfo.getUserName(),
+			Loggly.KEY_MESSAGE => testValue
+		};
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		testSettings.Include_Hostname__c = true;
+		testSettings.Include_Userinfo__c = true;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		String gifUrl = Loggly.gifUrl(testValue, testDate, testLevel);
+
+		Test.stopTest();
+
+		System.assert(String.isNotBlank(gifUrl), 'Gif URL should not be null');
+		System.assertEquals(endpoint+'.gif', gifUrl.substringBefore('?'), 'Did not get the right base url');
+
+		PageReference pageRef = new PageReference(gifUrl);
+
+		for (String key: pageRef.getParameters().keySet()) {
+			if (correctResponses.containsKey(key)) {
+				System.assertEquals(correctResponses.get(key), pageRef.getParameters().get(key), 'Did not get the right value back for "'+key+'"');
+				correctResponses.remove(key);
+			} else {
+				System.assert(false, 'Got a url parameter we did not expect "'+key+'" => "'+pageRef.getParameters().get(key)+'"');
+			}
+		}
+
+		System.assert(correctResponses.isEmpty(), 'Did not get url parameters back for ['+correctResponses.keySet()+']');
+	}
+
+	static testMethod void gifUrl_quad_test() {
+		String testValue = '_unittest_value_';
+		DateTime testDate = DateTime.now();
+		String testLevel = 'ERROR';
+		String testKey = '_unittest_key_';
+		String testData = '_unittest_data_';
+
+		Map<String, String> testAdditionalValues = new Map<String, String>{ testKey => testData };
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		Map<String, String> correctResponses = new Map<String, String>{
+			Loggly.KEY_HOST => hostname_val,
+			Loggly.KEY_LEVEL => testLevel,
+			Loggly.KEY_DATETIME => testDate.format(Loggly.DATE_FORMAT),
+			Loggly.KEY_USERID => UserInfo.getUserId(),
+			Loggly.KEY_USERNAME => UserInfo.getUserName(),
+			Loggly.KEY_MESSAGE => testValue,
+			testKey => testData
+		};
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		testSettings.Include_Hostname__c = true;
+		testSettings.Include_Userinfo__c = true;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		String gifUrl = Loggly.gifUrl(testValue, testDate, testLevel, testAdditionalValues);
+
+		Test.stopTest();
+
+		System.assert(String.isNotBlank(gifUrl), 'Gif URL should not be null');
+		System.assertEquals(endpoint+'.gif', gifUrl.substringBefore('?'), 'Did not get the right base url');
+
+		PageReference pageRef = new PageReference(gifUrl);
+
+		for (String key: pageRef.getParameters().keySet()) {
+			if (correctResponses.containsKey(key)) {
+				System.assertEquals(correctResponses.get(key), pageRef.getParameters().get(key), 'Did not get the right value back for "'+key+'"');
+				correctResponses.remove(key);
+			} else {
+				System.assert(false, 'Got a url parameter we did not expect "'+key+'" => "'+pageRef.getParameters().get(key)+'"');
+			}
+		}
+
+		System.assert(correctResponses.isEmpty(), 'Did not get url parameters back for ['+correctResponses.keySet()+']');
 	}
 }
