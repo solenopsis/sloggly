@@ -24,7 +24,7 @@
 @isTest
 public class Loggly_Test {
 	static TestMethod void settingName_default_test() {
-		System.assertEquals('default', Loggly.SETTING_NAME, 'Should get back "default"');
+		System.assertEquals(Loggly.DEFAULT_SETTING_NAME, Loggly.SETTING_NAME, 'Should get back "default"');
 	}
 
 	static TestMethod void settingName_set_test() {
