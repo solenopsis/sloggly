@@ -22,11 +22,15 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 global with sharing class Loggly {
-	private class TestException extends Exception {}
+	global class TestException extends Exception {}
 
 	global static String DEFAULT_LEVEL = 'INFO';
 	global static String DATE_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSZ';
 	global static String DEFAULT_SETTING_NAME = 'default';
+
+	global static String EXCEPTION_LEVEL = 'ERROR';
+	global static String EXCEPTION_TYPE_NAME = 'exceptionTypeName';
+	global static String EXCEPTION_STACK_TRACE = 'exceptionStackTrace';
 
 	global static Boolean TEST_NOCACHE= false;
 
@@ -359,7 +363,7 @@ global with sharing class Loggly {
 	* @param logCache An existing logCache to add our messages to if BATCH_LOGS is true
 	*/
 	global static void singleLog(String logValue, DateTime logDate, String logLevel, Map<String, String> additionalValues, LogCache logCache) {
-		Log log = new Log(logValue, logDate, logLevel);
+		Log log = new Log(logValue, logDate, logLevel, additionalValues);
 
 		//If we are batching logs we want to override single log.  All calls
 		//  should then be made through a class instance of loggly
@@ -398,6 +402,14 @@ global with sharing class Loggly {
 	/** Sends a single log to Loggly
 	*
 	* @param logValue The text message
+	*/
+	global static void singleLog(String logValue) {
+		singleLog(logValue, DateTime.now());
+	}
+
+	/** Sends a single log to Loggly
+	*
+	* @param logValue The text message
 	* @param logDate The date the event happened
 	*/
 	global static void singleLog(String logValue, DateTime logDate) {
@@ -423,6 +435,27 @@ global with sharing class Loggly {
 	*/
 	global static void singleLog(String logValue, DateTime logDate, String logLevel, Map<String, String> additionalValues) {
 		singleLog(logValue, logDate, logLevel, additionalValues, cache);
+	}
+
+	/** Creates a log based on an exception to send to loggly
+	*
+	* @param except The exception to log
+	*/
+	global static void singleLog(Exception except) {
+		singleLog(except, DateTime.now(), EXCEPTION_LEVEL);
+	}
+
+	/** Creates a log based on an exception to send to loggly
+	*
+	* @param except The exception to log
+	* @param logDate The date teh event happened
+	* @param logLevel The level
+	*/
+	global static void singleLog(Exception except, DateTime logDate, String logLevel) {
+		Map<String, String> additionalValues = new Map<String, String>();
+		additionalValues.put(EXCEPTION_TYPE_NAME, except.getTypeName());
+		additionalValues.put(EXCEPTION_STACK_TRACE, except.getStackTraceString());
+		singleLog(except.getMessage(), logDate, logLevel, additionalValues);
 	}
 
 	/** Sends the logs to Loggly

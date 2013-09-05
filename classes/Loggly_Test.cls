@@ -868,7 +868,7 @@ public class Loggly_Test {
 		Loggly.SETTING_NAME = settingName;
 		Loggly.BATCH_LOGS = true;
 
-		Loggly.LogCache testCache = new Loggly.LogCache(); 
+		Loggly.LogCache testCache = new Loggly.LogCache();
 
 		Test.startTest();
 
@@ -926,7 +926,7 @@ public class Loggly_Test {
 		Loggly.SETTING_NAME = settingName;
 		Loggly.BATCH_LOGS = true;
 
-		Loggly.LogCache testCache = null; 
+		Loggly.LogCache testCache = null;
 
 		Test.startTest();
 
@@ -955,7 +955,7 @@ public class Loggly_Test {
 		Loggly.SETTING_NAME = settingName;
 		Loggly.BATCH_LOGS = true;
 
-		Loggly.LogCache testCache = new Loggly.LogCache(); 
+		Loggly.LogCache testCache = new Loggly.LogCache();
 
 		Test.startTest();
 
@@ -1094,7 +1094,7 @@ public class Loggly_Test {
 		Loggly.SETTING_NAME = settingName;
 		Loggly.BATCH_LOGS = true;
 
-		Loggly.LogCache testCache = null; 
+		Loggly.LogCache testCache = null;
 
 		Test.startTest();
 
@@ -1122,7 +1122,7 @@ public class Loggly_Test {
 		Loggly.SETTING_NAME = settingName;
 		Loggly.BATCH_LOGS = true;
 
-		Loggly.LogCache testCache = new Loggly.LogCache(); 
+		Loggly.LogCache testCache = new Loggly.LogCache();
 
 		Test.startTest();
 
@@ -1239,6 +1239,164 @@ public class Loggly_Test {
 		Test.stopTest();
 
 		System.assertEquals(null, Loggly.cache, 'Cache should still be empty since we are not batching');
+	}
+
+	static testMethod void loggly_singleLog_single_noBatch_test() {
+		String testValue = '_unittest_value_';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue);
+
+		Test.stopTest();
+
+		System.assertEquals(null, Loggly.cache, 'Cache should still be empty since we are not batching');
+	}
+
+	static testMethod void loggly_singleLog_single_noCache_test() {
+		String testValue = '_unittest_value_';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+		Loggly.BATCH_LOGS = true;
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue);
+
+		Test.stopTest();
+
+		System.assert(Loggly.TEST_NOCACHE, 'Did not have a cache');
+	}
+
+	static testMethod void loggly_singleLog_single_cache_test() {
+		String testValue = '_unittest_value_';
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+		Loggly.BATCH_LOGS = true;
+
+		Loggly testLoggly = new Loggly();
+
+		Test.startTest();
+
+		Loggly.singleLog(testValue);
+
+		Test.stopTest();
+
+		System.assertEquals(1, Loggly.cache.logs.size(), 'Log did not get added to the cache');
+		System.assertEquals(testValue, Loggly.cache.logs.get(0).logValue, 'Did not get the correct log value');
+	}
+
+	static testMethod void loggly_singleLog_exception_noBatch_test() {
+		String testValue = '_unittest_value_';
+		Exception e = new Loggly.TestException(testValue);
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+
+		Test.startTest();
+
+		Loggly.singleLog(e);
+
+		Test.stopTest();
+
+		System.assertEquals(null, Loggly.cache, 'Cache should still be empty since we are not batching');
+	}
+
+	static testMethod void loggly_singleLog_exception_noCache_test() {
+		String testValue = '_unittest_value_';
+		Exception e = new Loggly.TestException(testValue);
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+		Loggly.BATCH_LOGS = true;
+
+		Test.startTest();
+
+		Loggly.singleLog(e);
+
+		Test.stopTest();
+
+		System.assert(Loggly.TEST_NOCACHE, 'Did not have a cache');
+	}
+
+	static testMethod void loggly_singleLog_exception_cache_test() {
+		String testValue = '_unittest_value_';
+		Exception e = new Loggly.TestException(testValue);
+
+		String settingName = '_unittest_name_';
+		String endpoint = 'test://myurl';
+		String hostname_val = '_unitest_hostname_';
+
+		LogglySettings__c testSettings = new LogglySettings__c();
+		testSettings.Name = settingName;
+		testSettings.Endpoint__c = endpoint;
+		testSettings.Hostname__c = hostname_val;
+		insert testSettings;
+
+		Loggly.SETTING_NAME = settingName;
+		Loggly.BATCH_LOGS = true;
+
+		Loggly testLoggly = new Loggly();
+
+		Test.startTest();
+
+		Loggly.singleLog(e);
+
+		Test.stopTest();
+
+		System.assertEquals(1, Loggly.cache.logs.size(), 'Log did not get added to the cache');
+		System.assertEquals(testValue, Loggly.cache.logs.get(0).logValue, 'Did not get the correct log value');
+		System.assertEquals(e.getTypeName(), Loggly.cache.logs.get(0).additionalValues.get(Loggly.EXCEPTION_TYPE_NAME), 'Did not get the correct EXCEPTION_TYPE_NAME');
 	}
 
 	static testMethod void controller_setters_test() {
