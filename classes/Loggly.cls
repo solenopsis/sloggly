@@ -468,18 +468,8 @@ global with sharing class Loggly {
 		logList.addAll(logs);
 
 		HttpResponse res = new HttpResponse();
-		// Build up an array of JSON messages to send to the endpoint
-		String message = '[';
-
-		for (Integer i = 0; i < logList.size(); i++) {
-			message = message + logList.get(i);
-
-			if (i < logList.size() - 1) {
-				message = message + ',';
-			}
-		}
-
-		message = message + ']';
+		// Build up a newline-separated list of JSON messages to send to the endpoint
+		String message = String.join(logList, '\n');
 
 		try {
 			HttpRequest req = new HttpRequest();
