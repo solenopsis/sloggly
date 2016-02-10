@@ -1,7 +1,7 @@
 SLoggly
 =======
 
-SLoggly is a class and an [AppExchange app](https://sites.secure.force.com/appexchange/listingDetail?listingId=a0N30000009x9XjEAI) for logging to [Loggly](http://loggly.com) from Salesforce APEX classes.
+SLoggly is a class and an [AppExchange app](https://appexchange.salesforce.com/listingDetail?listingId=a0N3000000B3ucgEAB) for logging to [Loggly](http://loggly.com) from Salesforce APEX classes.
 
 Features
 --------
@@ -49,15 +49,15 @@ Examples
 
     //Enable batching
     Loggly.BATCH_LOGS=True;
-   
+
     //Create new instance of the Loggly class
     Loggly l = new Loggly();
-   
+
     //Batch a message
     l.add('Error Message', DateTime.now(), 'LEVEL');
-   
+
     //Any calls to Loggly.singleLog after setting BATCH_LOGS will automatically be batched and sent with the .flush
-   
+
     //Flush the message queue
     l.flush();
 
