@@ -462,32 +462,55 @@ global with sharing class Loggly {
 	*
 	* @param logs A set of log messages (in JSON format) to send to endpoint
 	*/
-	@future (callout=true)
 	global static void sendLogs(Set<String> logs) {
-		List<String> logList = new List<String>();
-		logList.addAll(logs);
-
-		HttpResponse res = new HttpResponse();
-		// Build up a newline-separated list of JSON messages to send to the endpoint
-		String message = String.join(logList, '\n');
-
 		try {
-			HttpRequest req = new HttpRequest();
-
-			if (THROW_TEST_EXCEPTION) {
-				throw new TestException('Test exception');
+			if (Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
+				System.enqueueJob(new QueueableLogSender(logs));
+			} else {
+				System.debug(System.LoggingLevel.ERROR, 'SLoggly: Reached queuable limit');
 			}
+		} catch (System.AsyncException e) {
+			System.debug(System.LoggingLevel.ERROR, 'SLoggly: Unable to queue log message.\n Reason: ' + e.getMessage());
+		}
+	}
 
-			req.setEndpoint(LOGGLY_ENDPOINT);
-			req.setMethod('POST');
-			req.setHeader('content-type', 'application/json');
-			req.setBody(message);
+	private class QueueableLogSender implements Queueable, Database.AllowsCallouts {
+		private Set<String> logs;
 
-			Http http = new Http();
-			res = http.send(req);
-		} catch (Exception e) {
-			System.debug(e);
-			System.debug(res.toString());
+		public QueueableLogSender(Set<String> logs) {
+			this.logs = logs;
+		}
+
+		public void execute(QueueableContext context) {
+			List<String> logList = new List<String>(logs);
+
+			HttpResponse res = new HttpResponse();
+			// Build up a newline-separated list of JSON messages to send to the endpoint
+			String message = String.join(logList, '\n');
+
+			try {
+				HttpRequest req = new HttpRequest();
+
+				if (THROW_TEST_EXCEPTION) {
+					throw new TestException('Test exception');
+				}
+
+				req.setEndpoint(LOGGLY_ENDPOINT);
+				req.setMethod('POST');
+				req.setHeader('content-type', 'application/json');
+				req.setBody(message);
+
+				Http http = new Http();
+				res = http.send(req);
+			} catch (Exception e) {
+				List<String> errorMessages = new List<String> {
+					'SLoggly: Error sending message to Loggly Endpoint "' + LOGGLY_ENDPOINT + '"',
+					e.getTypeName() + ': ' + e.getMessage(),
+					e.getStackTraceString()
+				};
+
+				System.debug(System.LoggingLevel.ERROR, String.join(errorMessages, '\n'));
+			}
 		}
 	}
 
