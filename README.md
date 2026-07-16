@@ -13,11 +13,11 @@ Setup
 =====
 Configure Loggly
 ----------------
-* Create a [new input](http://loggly.com/support/sending-data/input-basics/) in Loggly that is HTTPS and json
+* Log in to Loggly and navigate to **Source Setup > Customer Tokens**
+* Your endpoint URL will be in the format: `https://logs-01.loggly.com/bulk/TOKEN/tag/bulk/`
+  * Replace `TOKEN` with your Customer Token from the Loggly portal
 
-     ![Loggly Input](http://i.imgur.com/Lk6E3.png "Loggly Input")
-
-* Copy your input URL from the input page
+* Copy your endpoint URL for use in the Salesforce configuration below
 
 Configure Salesforce
 --------------------
@@ -25,7 +25,7 @@ Configure Salesforce
      * Setup -> Secrity Controls -> Remote Site Settings
      * Click New Remote Site
      * Name it "Loggly"
-     * Set the Remote Site URL to "https://logs.loggly.com"
+     * Set the Remote Site URL to "https://logs-01.loggly.com"
 
      ![remote sites config](http://i.imgur.com/BFGcb.png "remote sites config")
 
